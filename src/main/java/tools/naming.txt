@@ -1,0 +1,2 @@
+命名上，如果可以直接是xxx，则无需再加Util后缀，比如StringUtil，MapUtil，因为不能直接命名为String、Map
+而Json是可以的

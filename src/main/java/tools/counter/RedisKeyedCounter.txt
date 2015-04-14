@@ -1,0 +1,115 @@
+package tools.counter;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+
+public class RedisKeyedCounter implements MultiKeyedCounter {
+	private String system;
+	private JedisPool pool;
+
+	public RedisKeyedCounter(String system, JedisPool pool) {
+		this.system = system;
+		this.pool = pool;
+	}
+
+	@Override
+	public long get(String key) {
+		Jedis client = pool.getResource();
+		try {
+			return tools.Convert.toLong(client.hget(system, key), 0);
+		} finally {
+			pool.returnResource(client);
+		}
+	}
+
+	@Override
+	public long set(String key, long v) {
+		Jedis client = pool.getResource();
+		try {
+			long i = get(key);
+			client.hset(system, key, String.valueOf(v));
+			return i;
+		} finally {
+			pool.returnResource(client);
+		}
+	}
+
+	@Override
+	public long increment(String key) {
+		return increment(key, 1);
+	}
+
+	@Override
+	public long decrement(String key) {
+		return decrement(key, 1);
+	}
+
+	@Override
+	public long increment(String key, long v) {
+		Jedis client = pool.getResource();
+		try {
+			return tools.Convert.toInt(client.hincrBy(system, key, v), 0);
+		} finally {
+			pool.returnResource(client);
+		}
+	}
+
+	@Override
+	public long decrement(String key, long v) {
+		Jedis client = pool.getResource();
+		try {
+			return tools.Convert.toInt(client.hincrBy(system, key, 0 - v), 0);
+		} finally {
+			pool.returnResource(client);
+		}
+	}
+
+	@Override
+	public Map<String, Long> getAll() {
+		Jedis client = pool.getResource();
+		try {
+			// 从redis里获取
+			Map<String, String> r = client.hgetAll(system);
+
+			// 加工数据
+			Map<String, Long> rtn = new HashMap<String, Long>();
+
+			Set<Entry<String, String>> set = r.entrySet();
+			for (Entry<String, String> item : set) {
+				rtn.put(item.getKey(), tools.Convert.toLong(item.getValue(), 0));
+			}
+
+			return rtn;
+		} finally {
+			pool.returnResource(client);
+		}
+	}
+
+	@Override
+	public Map<String, Long> setAll(long v) {
+		Jedis client = pool.getResource();
+		try {
+			// 从redis里获取
+			Map<String, String> r = client.hgetAll(system);
+
+			// 加工数据
+			Map<String, Long> rtn = new HashMap<String, Long>();
+
+			Set<Entry<String, String>> set = r.entrySet();
+			for (Entry<String, String> item : set) {
+				rtn.put(item.getKey(), tools.Convert.toLong(item.getValue(), 0));
+
+				// 设置新值
+				client.hset(system, item.getKey(), String.valueOf(v));
+			}
+
+			return rtn;
+		} finally {
+			pool.returnResource(client);
+		}
+	}
+}

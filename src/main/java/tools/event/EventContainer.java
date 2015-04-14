@@ -1,0 +1,93 @@
+package tools.event;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+public class EventContainer {
+	private Map<String, List<EventHandler>> eventHandlers = null;
+
+	/**
+	 * 2012-06-01 by liusan.dyf map的key= hook name
+	 */
+	public Map<String, List<EventHandler>> getEventHandlers() {
+		return eventHandlers;
+	}
+
+	public int size() {
+		if (eventHandlers != null)
+			return eventHandlers.size();
+
+		return 0;
+	}
+
+	public void clearAll() {
+		if (eventHandlers != null)
+			eventHandlers.clear();
+	}
+
+	/**
+	 * 清理掉一个hook下的所有的EventHandler 2013-12-16 by liusan.dyf
+	 * 
+	 * @param hook
+	 */
+	public void clearEventHandlers(String hook) {
+		if (eventHandlers != null)
+			eventHandlers.remove(hook);
+	}
+
+	/**
+	 * 2013-12-16 by liusan.dyf
+	 * 
+	 * @param hook
+	 * @param eventHandler
+	 */
+	public void addEventHandler(String hook, EventHandler eventHandler) {
+		// 2013-12-16 by liusan.dyf
+		if (eventHandlers == null)
+			eventHandlers = tools.MapUtil.create();
+
+		// 查找事件
+		List<EventHandler> list = eventHandlers.get(hook);
+		if (list == null)
+			list = new ArrayList<EventHandler>();
+
+		list.add(eventHandler);
+
+		eventHandlers.put(hook, list);
+	}
+
+	public void setEventHandlers(Map<String, List<EventHandler>> eventHandlers) {
+		this.eventHandlers = eventHandlers;
+	}
+
+	/**
+	 * 通过EventArgs的type属性来查找注册的事件列表 2012-07-05
+	 * 
+	 * @param sender
+	 * @param args
+	 */
+	public void onEvent(Object sender, EventArgs args) {
+		if (args == null || eventHandlers == null)
+			return;
+
+		// 是否存在type 2012-07-05
+		String hook = args.getType();
+		if (hook == null)
+			return;
+
+		execute(hook, sender, args);
+		execute("*", sender, args);// 2012-08-02
+	}
+
+	private void execute(String hook, Object sender, EventArgs args) {
+		// 查找事件
+		List<EventHandler> list = eventHandlers.get(hook);
+		if (list == null)
+			return;
+
+		// 循环执行
+		for (EventHandler item : list)
+			item.onEvent(sender, args);
+	}
+}
