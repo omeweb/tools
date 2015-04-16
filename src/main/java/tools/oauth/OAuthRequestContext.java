@@ -216,7 +216,7 @@ public class OAuthRequestContext {
 		// core
 		OAuthRequestContext context = new OAuthRequestContext();
 		context.setClientId("2350731631");
-		context.setClientSecret("1dd8c08e823d6ea32c9e184056a1ddf6");
+		context.setClientSecret("***");
 		context.setDefaultRedirectUri("http://auth.xml5.com/oauth/callback");
 
 		// 参数一：authorizeProvider
@@ -242,7 +242,7 @@ public class OAuthRequestContext {
 
 		// access token
 		// 请求个人微博列表
-		String tokenString = "2.00pdW6NB_g7FZCd518a4734dq9wPCE";
+		String tokenString = "***";
 		HttpResponse res = context.doRequestByAccessToken("https://api.weibo.com/2/statuses/user_timeline.json", "get",
 				null, null, tokenString);
 		System.out.println(res);
