@@ -69,6 +69,24 @@ public class Convert {
 	}
 
 	/**
+	 * 2015-4-16 14:02:33 by 六三
+	 * 
+	 * @param arr
+	 * @return
+	 */
+	public static <T> List<T> toList(T[] arr) {
+		if (arr == null || arr.length == 0)
+			return null;
+
+		List<T> list = new ArrayList<T>(arr.length);
+		for (T item : arr) {
+			list.add(item);
+		}
+
+		return list;
+	}
+
+	/**
 	 * 得到数组里，给定个元素的下一个元素，如果找不到则返回第一个元素 2014-05-17 by liusan.dyf
 	 * 
 	 * @param source

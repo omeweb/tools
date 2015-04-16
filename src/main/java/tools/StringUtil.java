@@ -705,13 +705,14 @@ public class StringUtil {
 		return list;
 	}
 
-	/************** ngrams **********************************/
+	/************** end of ngrams **********************************/
 
 	public static String[] split(String string, char delimiter) {
 		if (string == null || string.length() == 0)// 2014-12-01 by 六三
 			return null;
 
 		String[] temp = new String[(string.length() / 2) + 1];
+		
 		int count = 0;
 		int i = 0;
 		int j = string.indexOf(delimiter);
@@ -723,6 +724,7 @@ public class StringUtil {
 		}
 
 		temp[count++] = string.substring(i);
+		
 		String[] result = new String[count];
 		System.arraycopy(temp, 0, result, 0, count);
 		return result;

@@ -12,6 +12,12 @@ import tools.Convert;
 
 public class ConvertTest {
 	@Test
+	public void toListTest() {
+		String[] arr = tools.StringUtil.split("a,b,c,d", ',');
+		System.out.println(tools.Convert.toList(arr));
+	}
+
+	@Test
 	public void toStringExTest() {
 		Assert.assertEquals("0", tools.Convert.toStringEx(false));
 		Assert.assertEquals("1", tools.Convert.toStringEx(true));
