@@ -25,6 +25,7 @@ public class User {
 	 */
 	private long t;
 	private int status;// 2015-1-8 18:47:05 by 六三
+	private long tags;// 2015-4-20 20:37:50 by 六三
 
 	public String getData() {
 		return data;
@@ -80,5 +81,13 @@ public class User {
 
 	public void setStatus(int status) {
 		this.status = status;
+	}
+
+	public long getTags() {
+		return tags;
+	}
+
+	public void setTags(long tags) {
+		this.tags = tags;
 	}
 }
