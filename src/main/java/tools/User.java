@@ -24,7 +24,15 @@ public class User {
 	 * 时间戳 2015-1-8 18:39:46 by 六三
 	 */
 	private long t;
+
+	/**
+	 * 临时设置状态到用户对象上，比如设置已经过期
+	 */
 	private int status;// 2015-1-8 18:47:05 by 六三
+
+	/**
+	 * 用户的一些标记
+	 */
 	private long tags;// 2015-4-20 20:37:50 by 六三
 
 	public String getData() {
