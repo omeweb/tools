@@ -13,7 +13,7 @@ import tools.Context;
 import tools.counter.AtomicKeyedCounter;
 import tools.counter.MultiKeyedCounter;
 import tools.event.EventArgs;
-import tools.event.EventContainerManager;
+import tools.event.EventContainer;
 
 /**
  * 使用静态方法，方便使用，spring bean，注意init-method = init
@@ -25,6 +25,8 @@ public class Global extends tools.InitializeOnce {
 	 * 2014-10-22 by liusan.dyf，保存此次发布的版本号
 	 */
 	public static int V = 0;
+
+	private static EventContainer eventContainer = null;
 
 	public static final String LOCAL_IP = tools.StringUtil.getLocalIp();// 本机IP
 
@@ -168,7 +170,8 @@ public class Global extends tools.InitializeOnce {
 		logger.warn("开始初始化global");
 
 		// ===初始化工作
-		EventContainerManager.onEvent(this, EventArgs.create(this).setType("global.before-init"));
+		if (eventContainer != null)
+			eventContainer.onEvent(this, EventArgs.create(this).setType("global.before-init"));
 	}
 
 	/**
@@ -196,5 +199,13 @@ public class Global extends tools.InitializeOnce {
 	 */
 	public static void log(String loggerName, Object content) {
 		org.apache.commons.logging.LogFactory.getLog(loggerName).warn(content);
+	}
+
+	public static EventContainer getEventContainer() {
+		return eventContainer;
+	}
+
+	public static void setEventContainer(EventContainer v) {
+		eventContainer = v;
 	}
 }
