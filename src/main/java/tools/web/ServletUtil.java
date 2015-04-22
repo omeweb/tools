@@ -21,9 +21,9 @@ public class ServletUtil {
 	 * @param request
 	 * @return
 	 */
-	public static Map<String, String> getParameterMap(HttpServletRequest request) {
+	public static Map<String, Object> getParameterMap(HttpServletRequest request) {
 
-		Map<String, String> rtn = tools.MapUtil.create();
+		Map<String, Object> rtn = tools.MapUtil.create();
 
 		@SuppressWarnings("unchecked")
 		Map<String, String[]> map = (Map<String, String[]>) request.getParameterMap();
