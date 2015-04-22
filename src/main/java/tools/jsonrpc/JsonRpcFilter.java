@@ -119,7 +119,7 @@ public class JsonRpcFilter implements Filter {
 
 		// invoke.do?obj=spring.xxx&method=getXXX&params=...
 
-		// ajax下，Ajax强制将中文内容进行UTF-8编码，这样导致进入后端后使用GBK进行解码时发生乱码
+		// ajax下，Ajax强制将中文内容进行UTF-8编码，这样导致进入后端后使用UTF-8进行解码时发生乱码
 		// http://www.blogjava.net/xylz/archive/2011/06/10/352073.html
 
 		// charset

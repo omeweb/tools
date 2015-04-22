@@ -82,7 +82,7 @@ public class CharacterToAlpha {
 		String str = new String(arr);
 
 		try {
-			byte[] bytes = str.getBytes("GB2312");// 一定要是GB2312的编码 2015-3-18 19:14:30 by 六三
+			byte[] bytes = str.getBytes("UTF-8");// 一定要是UTF-8的编码 2015-3-18 19:14:30 by 六三
 			if (bytes.length < 2)// 英文字符
 				return 0;
 
