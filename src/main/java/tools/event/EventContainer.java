@@ -5,25 +5,25 @@ import java.util.List;
 import java.util.Map;
 
 public class EventContainer {
-	private Map<String, List<EventHandler>> eventHandlers = null;
+	private Map<String, List<EventHandler>> handlers = null;
 
 	/**
 	 * 2012-06-01 by liusan.dyf map的key= hook name
 	 */
-	public Map<String, List<EventHandler>> getEventHandlers() {
-		return eventHandlers;
+	public Map<String, List<EventHandler>> getHandlers() {
+		return handlers;
 	}
 
 	public int size() {
-		if (eventHandlers != null)
-			return eventHandlers.size();
+		if (handlers != null)
+			return handlers.size();
 
 		return 0;
 	}
 
 	public void clearAll() {
-		if (eventHandlers != null)
-			eventHandlers.clear();
+		if (handlers != null)
+			handlers.clear();
 	}
 
 	/**
@@ -31,34 +31,34 @@ public class EventContainer {
 	 * 
 	 * @param hook
 	 */
-	public void clearEventHandlers(String hook) {
-		if (eventHandlers != null)
-			eventHandlers.remove(hook);
+	public void clearHandlers(String hook) {
+		if (handlers != null)
+			handlers.remove(hook);
 	}
 
 	/**
 	 * 2013-12-16 by liusan.dyf
 	 * 
 	 * @param hook
-	 * @param eventHandler
+	 * @param handler
 	 */
-	public void addEventHandler(String hook, EventHandler eventHandler) {
+	public void addHandler(String hook, EventHandler handler) {
 		// 2013-12-16 by liusan.dyf
-		if (eventHandlers == null)
-			eventHandlers = tools.MapUtil.create();
+		if (handlers == null)
+			handlers = tools.MapUtil.create();
 
 		// 查找事件
-		List<EventHandler> list = eventHandlers.get(hook);
+		List<EventHandler> list = handlers.get(hook);
 		if (list == null)
 			list = new ArrayList<EventHandler>();
 
-		list.add(eventHandler);
+		list.add(handler);
 
-		eventHandlers.put(hook, list);
+		handlers.put(hook, list);
 	}
 
-	public void setEventHandlers(Map<String, List<EventHandler>> eventHandlers) {
-		this.eventHandlers = eventHandlers;
+	public void setHandlers(Map<String, List<EventHandler>> v) {
+		this.handlers = v;
 	}
 
 	/**
@@ -68,7 +68,7 @@ public class EventContainer {
 	 * @param args
 	 */
 	public void onEvent(Object sender, EventArgs args) {
-		if (args == null || eventHandlers == null)
+		if (args == null || handlers == null)
 			return;
 
 		// 是否存在type 2012-07-05
@@ -82,12 +82,12 @@ public class EventContainer {
 
 	private void execute(String hook, Object sender, EventArgs args) {
 		// 查找事件
-		List<EventHandler> list = eventHandlers.get(hook);
+		List<EventHandler> list = handlers.get(hook);
 		if (list == null)
 			return;
 
 		// 循环执行
 		for (EventHandler item : list)
-			item.onEvent(sender, args);
+			item.fire(sender, args);
 	}
 }

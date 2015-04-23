@@ -7,5 +7,5 @@ public interface EventHandler {
 	 * @param sender
 	 * @param args
 	 */
-	void onEvent(Object sender, EventArgs args);
+	void fire(Object sender, EventArgs args);
 }
