@@ -4,54 +4,32 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.Filter;
 import javax.servlet.http.*;
 
 import tools.Convert;
 import tools.StringUtil;
 
 public class ServletUtil {
-	public static int getInt(HttpServletRequest request, String key, int def) {
-		return Convert.toInt(request.getParameter(key), def);
+	// ============如果在filter的init方法里调用了registerFilter方法 2015-4-24 15:59:10 by liusan.dyf
+	private static Map<String, Filter> filters = tools.MapUtil.create();
+
+	public static Filter getFilter(String name) {
+		if (name == null)
+			return null;
+
+		return filters.get(name);
 	}
 
-	/**
-	 * request.getParameterMap()的返回类型是Map类型的对象，也就是符合key-value的对应关系，但这里要注 意的是，value的类型是String[],而不是String <br />
-	 * 不会返回null，最多是空的map 2012-11-12 by liusan.dyf
-	 * 
-	 * @param request
-	 * @return
-	 */
-	public static Map<String, Object> getParameterMap(HttpServletRequest request) {
+	public static void registerFilter(String name, Filter v) {
+		if (name != null && v != null)
+			filters.put(name, v);
+	}
 
-		Map<String, Object> rtn = tools.MapUtil.create();
+	// ============ end filter
 
-		@SuppressWarnings("unchecked")
-		Map<String, String[]> map = (Map<String, String[]>) request.getParameterMap();
-
-		// 如果为空
-		if (map == null || map.size() == 0)
-			return rtn;
-
-		Set<String> keys = map.keySet();
-		for (String item : keys) {
-			String[] value = map.get(item);
-
-			if (value.length == 1) // 只有一个值
-				rtn.put(item, value[0]);
-			else
-				rtn.put(item, Convert.join(value, ","));// 多值
-		}
-
-		return rtn;
-
-		// request.getParameterMap()的返回类型是Map类型的对象，也就是符合key-value的对应关系，但这里要注意的是，value的类型是String[],而不是String.
-		// 得到jsp页面提交的参数很容易,但通过它可以将request中的参数和值变成一个map，以下是将得到的参数和值
-		// 打印出来，形成的map结构：map(key,value[])，即：key是String型，value是String型数组。
-		// 例如：request中的参数t1=1&t1=2&t2=3
-		// 形成的map结构：
-		// key=t1;value[0]=1,value[1]=2
-		// key=t2;value[0]=3
-		// 如果直接用map.get("t1"),得到的将是:Ljava.lang.String; value只所以是数组形式，就是防止参数名有相同的情况。
+	public static int getInt(HttpServletRequest request, String key, int def) {
+		return Convert.toInt(request.getParameter(key), def);
 	}
 
 	public static long getLong(HttpServletRequest request, String key, long def) {
@@ -127,5 +105,45 @@ public class ServletUtil {
 			response.addHeader("Content-Type", contentType);
 		else
 			response.addHeader("Content-Type", contentType + ";charset=" + charset);
+	}
+
+	/**
+	 * request.getParameterMap()的返回类型是Map类型的对象，也就是符合key-value的对应关系，但这里要注 意的是，value的类型是String[],而不是String <br />
+	 * 不会返回null，最多是空的map 2012-11-12 by liusan.dyf
+	 * 
+	 * @param request
+	 * @return
+	 */
+	public static Map<String, Object> getParameterMap(HttpServletRequest request) {
+
+		Map<String, Object> rtn = tools.MapUtil.create();
+
+		@SuppressWarnings("unchecked")
+		Map<String, String[]> map = (Map<String, String[]>) request.getParameterMap();
+
+		// 如果为空
+		if (map == null || map.size() == 0)
+			return rtn;
+
+		Set<String> keys = map.keySet();
+		for (String item : keys) {
+			String[] value = map.get(item);
+
+			if (value.length == 1) // 只有一个值
+				rtn.put(item, value[0]);
+			else
+				rtn.put(item, Convert.join(value, ","));// 多值
+		}
+
+		return rtn;
+
+		// request.getParameterMap()的返回类型是Map类型的对象，也就是符合key-value的对应关系，但这里要注意的是，value的类型是String[],而不是String.
+		// 得到jsp页面提交的参数很容易,但通过它可以将request中的参数和值变成一个map，以下是将得到的参数和值
+		// 打印出来，形成的map结构：map(key,value[])，即：key是String型，value是String型数组。
+		// 例如：request中的参数t1=1&t1=2&t2=3
+		// 形成的map结构：
+		// key=t1;value[0]=1,value[1]=2
+		// key=t2;value[0]=3
+		// 如果直接用map.get("t1"),得到的将是:Ljava.lang.String; value只所以是数组形式，就是防止参数名有相同的情况。
 	}
 }
