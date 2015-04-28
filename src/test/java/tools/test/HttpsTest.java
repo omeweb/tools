@@ -11,8 +11,7 @@ import javax.net.ssl.SSLSession;
 
 public class HttpsTest {
 	public static void main(String[] args) throws Exception {
-		URL url = new URL(
-				"https://mtee.alibaba-inc.com/requestLimited.do?obj=kv&method=getOne&params={%22typeCode%22:%22app%22,%22key%22:%22raider%22}&t=0&appKey=raider&appSecret=taobao1234&host=raider010152034010.et1/10.152.34.10");
+		URL url = new URL("*");
 		HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
 		conn.setHostnameVerifier(new TrustAnyHostnameVerifier());
 		conn.connect();

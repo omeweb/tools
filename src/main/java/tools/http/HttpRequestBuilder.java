@@ -206,7 +206,7 @@ public class HttpRequestBuilder {
 		int i = 0;
 
 		// https测试
-		String str = HttpRequestBuilder.create("https://is.alibaba-inc.com/site/default.aspx").get()
+		String str = HttpRequestBuilder.create("https://baidu.com").get()
 				.setContentCharset("utf-8").toString();
 		System.out.println(str);
 
