@@ -100,6 +100,7 @@
 		  <scope>test</scope>
 		</dependency>
 		
+		<!--id生成器里有用到读写文件-->
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>

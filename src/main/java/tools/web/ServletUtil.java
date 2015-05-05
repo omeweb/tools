@@ -1,5 +1,7 @@
 package tools.web;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
@@ -112,11 +114,12 @@ public class ServletUtil {
 	 * 不会返回null，最多是空的map 2012-11-12 by liusan.dyf
 	 * 
 	 * @param request
+	 * @param charset 可以为null
 	 * @return
 	 */
-	public static Map<String, Object> getParameterMap(HttpServletRequest request) {
+	public static Map<String, String> getParameterMap(HttpServletRequest request, String charset) {
 
-		Map<String, Object> rtn = tools.MapUtil.create();
+		Map<String, String> rtn = tools.MapUtil.create();
 
 		@SuppressWarnings("unchecked")
 		Map<String, String[]> map = (Map<String, String[]>) request.getParameterMap();
@@ -128,11 +131,25 @@ public class ServletUtil {
 		Set<String> keys = map.keySet();
 		for (String item : keys) {
 			String[] value = map.get(item);
+			String realValue = null;
 
 			if (value.length == 1) // 只有一个值
-				rtn.put(item, value[0]);
+				realValue = value[0];
 			else
-				rtn.put(item, Convert.join(value, ","));// 多值
+				realValue = Convert.join(value, ",");// 多值
+
+			// 进行解码 2015-5-5 12:43:33 by liusan.dyf
+			if (realValue != null) {
+				try {
+					if (charset != null)
+						realValue = URLDecoder.decode(realValue, charset);
+				} catch (UnsupportedEncodingException e) {
+
+				}
+
+				rtn.put(item, realValue);
+			}
+
 		}
 
 		return rtn;
