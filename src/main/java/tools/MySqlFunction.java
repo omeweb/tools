@@ -1234,7 +1234,7 @@ public class MySqlFunction {
 			return new Date();
 
 		if (value instanceof String) {
-			String str = (String) value;
+			String str = ((String) value).trim();
 
 			String pattern = DATE_FORMAT_SHORT;
 			if (str.indexOf('.') > -1)

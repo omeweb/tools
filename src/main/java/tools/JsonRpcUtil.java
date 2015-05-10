@@ -57,15 +57,12 @@ public class JsonRpcUtil {
 
 		int fixedTimeout = Convert.toInt(httpParams.get("timeout"), 1000 * 2);
 
-		// 构造请求报文，这个是自己的标准
-		Map<String, Object> body = tools.MapUtil.create();
-		body.put("id", 1);
+		// 构造请求报文，这个是自己的标准，2015-5-7 21:15:42 已经升级为新的rpc报文，取消jsonrpcContent的报文 by liusan.dyf
+		Map<String, String> body = tools.MapUtil.create();
+		body.put("id", "1");
 		body.put("method", method);
 		body.put("jsonrpc", "2.0");
-		body.put("params", params);
-
-		String jsonrpc = Json.toString(body);
-		// System.out.println(jsonrpc);
+		body.put("params", Json.toString(params));
 
 		// 修正url，默认是http协议 2013-08-28 by liusan.dyf
 		if (!url.startsWith("http://") && !url.startsWith("https://"))
@@ -83,8 +80,9 @@ public class JsonRpcUtil {
 		// 请求
 		try {
 			// 发送请求
-			HttpRequestBuilder builder = HttpRequestBuilder.create(url).data("jsonrpcContent", jsonrpc)
-					.connectTimeout(fixedTimeout).timeout(fixedTimeout);
+			HttpRequestBuilder builder = HttpRequestBuilder.create(url)
+			// .data("jsonrpc", Json.toString(body))
+					.data(body).connectTimeout(fixedTimeout).timeout(fixedTimeout);
 
 			if (httpParams != null) {
 				String tempKey = "cookie";
@@ -186,7 +184,7 @@ public class JsonRpcUtil {
 	}
 
 	public static void main(String[] args) {
-		String url = "mtee.admin.taobao.org";
+		String url = "127.0.0.1";
 
 		// jsonrpc参数
 		Map<String, Object> params = tools.MapUtil.create();

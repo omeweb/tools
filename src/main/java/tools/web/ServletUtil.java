@@ -13,6 +13,8 @@ import tools.Convert;
 import tools.StringUtil;
 
 public class ServletUtil {
+	private static final String CONTENT_TYPE = "Content-Type";
+
 	// ============如果在filter的init方法里调用了registerFilter方法 2015-4-24 15:59:10 by liusan.dyf
 	private static Map<String, Filter> filters = tools.MapUtil.create();
 
@@ -104,9 +106,9 @@ public class ServletUtil {
 	public static void addContentType(HttpServletResponse response, String contentType, String charset) {
 		if (StringUtil.isNullOrEmpty(charset))
 			// 编码
-			response.addHeader("Content-Type", contentType);
+			response.addHeader(CONTENT_TYPE, contentType);
 		else
-			response.addHeader("Content-Type", contentType + ";charset=" + charset);
+			response.addHeader(CONTENT_TYPE, contentType + ";charset=" + charset);
 	}
 
 	/**
@@ -117,10 +119,9 @@ public class ServletUtil {
 	 * @param charset 可以为null
 	 * @return
 	 */
-	public static Map<String, String> getParameterMap(HttpServletRequest request, String charset) {
-
-		Map<String, String> rtn = tools.MapUtil.create();
-
+	public static Map<String, Object> getParameterMap(HttpServletRequest request, String charset) {
+		Map<String, Object> rtn = tools.MapUtil.create();
+		
 		@SuppressWarnings("unchecked")
 		Map<String, String[]> map = (Map<String, String[]>) request.getParameterMap();
 
@@ -144,12 +145,11 @@ public class ServletUtil {
 					if (charset != null)
 						realValue = URLDecoder.decode(realValue, charset);
 				} catch (UnsupportedEncodingException e) {
-
+					e.printStackTrace();
 				}
 
 				rtn.put(item, realValue);
 			}
-
 		}
 
 		return rtn;
