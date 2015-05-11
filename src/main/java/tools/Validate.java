@@ -385,6 +385,26 @@ public class Validate {
 		// return isZHCN(c + "");
 	}
 
+	/**
+	 * 2015-5-11 17:58:19 by liusan.dyf
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public static boolean isMobile(String v) {
+		if (tools.Validate.isNullOrEmpty(v))
+			return false;
+
+		String m = v;
+		if (m.startsWith("+86"))
+			m = m.substring(3);
+
+		if (isNumeric(m) && m.length() == 11)// 大陆的手机，11位，其他先不考虑
+			return true;
+
+		return false;
+	}
+
 	public static boolean isChinese(String v) {
 		if (v == null)
 			return false;

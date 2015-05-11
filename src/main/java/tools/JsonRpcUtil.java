@@ -175,12 +175,20 @@ public class JsonRpcUtil {
 	}
 
 	public static Object parseResult(String json) {
-		SingleInvokeResult r = Json.toObject(json,
-				new com.fasterxml.jackson.core.type.TypeReference<SingleInvokeResult>() {
-				});
-		if (r == null)
-			return null;
-		return r.getResult();
+		try {
+			SingleInvokeResult r = Json.toObject(json,
+					new com.fasterxml.jackson.core.type.TypeReference<SingleInvokeResult>() {
+					});
+			if (r == null)
+				return null;
+
+			return r.getResult();
+		} catch (Exception e) {
+			System.out.println(json);
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 
 	public static void main(String[] args) {
