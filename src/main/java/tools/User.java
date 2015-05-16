@@ -10,7 +10,7 @@ import java.util.Map;
  * @since 2014年5月17日
  */
 public class User {
-	private String id;
+	private long id;
 	private String name;
 	private String data;
 	private Map<String, Object> extra;
@@ -59,11 +59,11 @@ public class User {
 		this.isEmpty = isEmpty;
 	}
 
-	public String getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
