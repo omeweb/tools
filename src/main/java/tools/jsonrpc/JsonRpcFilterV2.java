@@ -156,7 +156,7 @@ public class JsonRpcFilterV2 implements Filter {
 		int rid = tools.Convert.toInt(requestId, 0);
 
 		// 开始调用
-		if (targetObject != null) {
+		if (targetObject != null && !tools.Validate.isBlank(method)) {
 			try {
 				// if (tools.Validate.isNullOrEmpty(params)) // 2014-01-09 by liusan.dyf
 				// params = "{}";
@@ -169,7 +169,9 @@ public class JsonRpcFilterV2 implements Filter {
 
 				logger.error(e);
 			} catch (Exception e) {
-				result = JsonRpcService.toJsonRpcErrorResult(rid, 0, e.getCause().getMessage());
+				String message = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
+				result = JsonRpcService.toJsonRpcErrorResult(rid, 0, message);
+
 				logger.error(e);
 			}
 		} else {
