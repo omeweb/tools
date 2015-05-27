@@ -128,9 +128,10 @@ public class JsonRpcFilter implements Filter {
 		// key
 		String objKey = request.getParameter("obj");
 
+		// jsonrpc的内容
 		String jsonrpc = request.getParameter("jsonrpc");// 完整的json
 		if (tools.Validate.isBlank(jsonrpc))
-			jsonrpc = request.getParameter("jsonrpcContent"); // 对老版本的兼容 2015-5-25 12:02:32 by liusan.dyf
+			jsonrpc = request.getParameter("jsonrpcContent"); // 对老版本发起jsonrpc请求的js的兼容 2015-5-25 12:02:32 by liusan.dyf
 
 		// 解码
 		if (!tools.Validate.isNullOrEmpty(inputCharset)) {
