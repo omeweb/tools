@@ -204,7 +204,7 @@ public class StringUtilTest {
 	@Test
 	public void stringToMapTest() {
 		String str = "b@d2=1.2, b@d1=0.1201, b@d0=0.1, b@d26=2.0, b@d27=1.7, a@d26=1.0, _=1.3542048E9, b@d24=1.4, b@d28=1.8, b@d29=1.9";
-		System.out.println(StringUtil.stringToMap(str, ",", "=", null));
+		System.out.println(StringUtil.toMap(str, ",", "=", null));
 		System.out
 				.println(StringUtil.parseQueryString("max_active=10&max_idle=20&max_wait=1000&timeout=5000", "utf-8"));
 

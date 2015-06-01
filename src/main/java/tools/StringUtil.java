@@ -712,7 +712,7 @@ public class StringUtil {
 			return null;
 
 		String[] temp = new String[(string.length() / 2) + 1];
-		
+
 		int count = 0;
 		int i = 0;
 		int j = string.indexOf(delimiter);
@@ -724,7 +724,7 @@ public class StringUtil {
 		}
 
 		temp[count++] = string.substring(i);
-		
+
 		String[] result = new String[count];
 		System.arraycopy(temp, 0, result, 0, count);
 		return result;
@@ -1164,6 +1164,11 @@ public class StringUtil {
 		return strSource;
 	}
 
+	@Deprecated
+	public static Map<String, String> stringToMap(String source, String on, String kvSeparator, String charset) {
+		return toMap(source, on, kvSeparator, charset);
+	}
+
 	/**
 	 * a=1,b=2，目前不解决【a=1,b=,c=3】，已经能解决 2014-09-03 by liusan.dyf
 	 * 
@@ -1173,7 +1178,7 @@ public class StringUtil {
 	 * @param charset
 	 * @return
 	 */
-	public static Map<String, String> stringToMap(String source, String on, String kvSeparator, String charset) {
+	public static Map<String, String> toMap(String source, String on, String kvSeparator, String charset) {
 		if (isNullOrEmpty(source))
 			return null;
 

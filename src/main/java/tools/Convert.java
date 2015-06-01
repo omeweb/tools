@@ -413,6 +413,13 @@ public class Convert {
 		return message;
 	}
 
+	/**
+	 * 进制转换，num=10进制的数字，t=要转换的目标进制
+	 * 
+	 * @param num
+	 * @param t
+	 * @return
+	 */
 	public static String toHexString(int num, int t) {
 		if (t == 10) // 2011-05-06 增加 by 杜有发
 			return String.valueOf(t);
@@ -420,10 +427,10 @@ public class Convert {
 		// if (t < 2 || t > 36)
 		// throw new Exception("进制不合本程序要求，请输入2-36之间的任意整数(包含2和36)！");
 
-		StringBuilder r = new StringBuilder();
-
 		if (num == 0)
 			return "0";
+
+		StringBuilder r = new StringBuilder();
 
 		while (num > 0) {
 			r.insert(0, toHexCode(num % t));
