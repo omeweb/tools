@@ -23,7 +23,7 @@ public class OAuthRequestContext {
 	private String defaultRedirectUri;
 
 	private ProviderDefinition authorizeProvider;
-	private ProviderDefinition accessTokenProvider;
+	private ProviderDefinition accessTokenDefinition;
 
 	public String getUrl(ProviderDefinition de, Display display, String redirectUri, ResponseType responseType,
 			String state) {
@@ -101,14 +101,14 @@ public class OAuthRequestContext {
 	public AccessToken refreshAccessToken(String refreshToken, String state) throws Exception {
 		// https://api.weibo.com/oauth2/access_token?client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET&grant_type=password&username=USER_NAME&password=PASSWORD
 
-		HttpRequestBuilder http = HttpRequestBuilder.create(this.getAccessTokenProvider().getUrl())
+		HttpRequestBuilder http = HttpRequestBuilder.create(this.getAccessTokenDefinition().getUrl())
 				.data(FieldConstant.REFRESH_TOKEN, refreshToken).data(FieldConstant.CLIENT_ID, this.getClientId())
 				.data(FieldConstant.CLIENT_SECRET, this.getClientSecret())
 				.data(FieldConstant.GRANT_TYPE, GrantType.REFRESH_TOKEN.getValue()).data(FieldConstant.STATE, state);
 
 		// http.proxy("localhost", 8888);
 		// http.multipart(true);
-		HttpResponse res = http.execute(this.getAccessTokenProvider().getMethod());
+		HttpResponse res = http.execute(this.getAccessTokenDefinition().getMethod());
 
 		return getAccessTokenFromResponse(res);
 	}
@@ -116,7 +116,7 @@ public class OAuthRequestContext {
 	public AccessToken getAccessTokenByPassword(String userName, String password, String state) throws Exception {
 		// https://api.weibo.com/oauth2/access_token?client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET&grant_type=password&username=USER_NAME&password=PASSWORD
 
-		HttpRequestBuilder http = HttpRequestBuilder.create(this.getAccessTokenProvider().getUrl())
+		HttpRequestBuilder http = HttpRequestBuilder.create(this.getAccessTokenDefinition().getUrl())
 				.data(FieldConstant.USERNAME, userName).data(FieldConstant.PASSWORD, password)
 				.data(FieldConstant.CLIENT_ID, this.getClientId())
 				.data(FieldConstant.CLIENT_SECRET, this.getClientSecret())
@@ -124,13 +124,13 @@ public class OAuthRequestContext {
 
 		// http.proxy("localhost", 8888);
 		// http.multipart(true);
-		HttpResponse res = http.execute(this.getAccessTokenProvider().getMethod());
+		HttpResponse res = http.execute(this.getAccessTokenDefinition().getMethod());
 
 		return getAccessTokenFromResponse(res);
 	}
 
 	/**
-	 * 请求accessTokenProvider
+	 * 请求accessTokenDefinition
 	 * 
 	 * @param grantCode
 	 * @param redirectUri
@@ -141,7 +141,7 @@ public class OAuthRequestContext {
 	public AccessToken getAccessTokenByCode(String grantCode, String redirectUri, String state) throws Exception {
 		// https://api.weibo.com/oauth2/access_token?client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET&grant_type=authorization_code&redirect_uri=YOUR_REGISTERED_REDIRECT_URI&code=CODE
 		HttpRequestBuilder http = HttpRequestBuilder
-				.create(this.getAccessTokenProvider().getUrl())
+				.create(this.getAccessTokenDefinition().getUrl())
 				.data(FieldConstant.CODE, grantCode)
 				.data(FieldConstant.REDIRECT_URI,
 						redirectUri == null || redirectUri.length() == 0 ? getDefaultRedirectUri() : redirectUri)
@@ -152,7 +152,7 @@ public class OAuthRequestContext {
 
 		// http.proxy("localhost", 8888);
 		// http.multipart(true);
-		HttpResponse res = http.execute(this.getAccessTokenProvider().getMethod());
+		HttpResponse res = http.execute(this.getAccessTokenDefinition().getMethod());
 
 		return getAccessTokenFromResponse(res);
 	}
@@ -196,12 +196,12 @@ public class OAuthRequestContext {
 		this.authorizeProvider = authorizeProvider;
 	}
 
-	public ProviderDefinition getAccessTokenProvider() {
-		return accessTokenProvider;
+	public ProviderDefinition getAccessTokenDefinition() {
+		return accessTokenDefinition;
 	}
 
-	public void setAccessTokenProvider(ProviderDefinition accessTokenProvider) {
-		this.accessTokenProvider = accessTokenProvider;
+	public void setAccessTokenDefinition(ProviderDefinition accessTokenDefinition) {
+		this.accessTokenDefinition = accessTokenDefinition;
 	}
 
 	public String getDefaultRedirectUri() {
@@ -225,11 +225,11 @@ public class OAuthRequestContext {
 		authorizeProvider.setMethod("GET");
 		context.setAuthorizeProvider(authorizeProvider);
 
-		// 参数二：accessTokenProvider
-		ProviderDefinition accessTokenProvider = new ProviderDefinition();
-		accessTokenProvider.setUrl("https://api.weibo.com/oauth2/access_token");
-		accessTokenProvider.setMethod("POST");
-		context.setAccessTokenProvider(accessTokenProvider);
+		// 参数二：accessTokenDefinition
+		ProviderDefinition accessTokenDefinition = new ProviderDefinition();
+		accessTokenDefinition.setUrl("https://api.weibo.com/oauth2/access_token");
+		accessTokenDefinition.setMethod("POST");
+		context.setAccessTokenDefinition(accessTokenDefinition);
 
 		// 构造一个url：这个url要在浏览器里调整过去，回调里会有code参数
 		String url = context.getAuthorizeUrl(Display.DEFAULT, null, ResponseType.CODE, "testState");
