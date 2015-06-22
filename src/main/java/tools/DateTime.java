@@ -208,32 +208,56 @@ public class DateTime {
 	 * 得到下月第一天，其中时分秒全部清零 2014-07-29 by liusan.dyf
 	 * 
 	 * @param d
-	 * @param diff +1下个月，-1上个月
 	 * @return
 	 */
-	public Date getFirstDayOfMonth(Date d, int diff) {
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(d);
-		cal.set(Calendar.DATE, 1);// 设为当前月的1号
-		cal.set(Calendar.HOUR_OF_DAY, 0);
-		cal.set(Calendar.MINUTE, 0);
-		cal.set(Calendar.SECOND, 0);
-		cal.set(Calendar.MILLISECOND, 0);
+	public static Date getFirstDayOfMonth(Date d) {
+		if (d == null)
+			d = new Date();
 
-		cal.add(Calendar.MONTH, diff);// +一个月，变为下月的1号
-		// lastDate.add(Calendar.DATE,-1);//减去一天，变为当月最后一天
+		// Calendar cal = Calendar.getInstance();
+		// cal.setTime(d);
+		// cal.set(Calendar.DATE, 1);// 设为当前月的1号
+		// cal.set(Calendar.HOUR_OF_DAY, 0);
+		// cal.set(Calendar.MINUTE, 0);
+		// cal.set(Calendar.SECOND, 0);
+		// cal.set(Calendar.MILLISECOND, 0);
+		//
+		// cal.add(Calendar.MONTH, diff);// +一个月，变为下月的1号
+		// // lastDate.add(Calendar.DATE,-1);//减去一天，变为当月最后一天
+		//
+		// return cal.getTime();
 
-		return cal.getTime();
+		return new org.joda.time.DateTime(d).withDayOfMonth(1).withTime(0, 0, 0, 0).toDate();
+	}
+
+	public static Date getFirstDayOfMonth(int year, int month) {
+		return new org.joda.time.DateTime(year, month, 1, 0, 0).toDate();
+	}
+
+	public static Date getLastDayOfMonth(Date d) {
+		if (d == null)
+			d = new Date();
+
+		org.joda.time.DateTime dt = new org.joda.time.DateTime(d).withDayOfMonth(1).withTime(0, 0, 0, 0);
+
+		return dt.plusMonths(1).plusDays(-1).toDate();
 	}
 
 	public static void main(String[] args) {
 		org.joda.time.DateTime time = new org.joda.time.DateTime();
 		System.out.println(time.getMillis());
+		System.out.println(time.getMonthOfYear());
+		System.out.println(time.getYear());
 
 		//
 		System.out.println(plusSeconds(300));
 
 		//
 		System.out.println(diff(new Date(), plusSeconds(200)));
+
+		//
+		System.out.println(getFirstDayOfMonth(2014, 10));		
+		System.out.println(getFirstDayOfMonth(null));
+		System.out.println(getLastDayOfMonth(null));
 	}
 }

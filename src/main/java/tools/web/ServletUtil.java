@@ -11,6 +11,7 @@ import javax.servlet.http.*;
 
 import tools.Convert;
 import tools.StringUtil;
+import tools.Validate;
 
 public class ServletUtil {
 	private static final String CONTENT_TYPE = "Content-Type";
@@ -50,6 +51,22 @@ public class ServletUtil {
 
 	public static String getString(HttpServletRequest request, String key) {
 		return request.getParameter(key);
+	}
+
+	/**
+	 * 得到请求的url，附带queryString参数，但是不包含post的参数 2015-6-19 10:38:13 by liusan.dyf
+	 * 
+	 * @param request
+	 * @return
+	 */
+	public static String getRequestUrl(HttpServletRequest request) {
+		String url = request.getRequestURL().toString();
+		String queryString = request.getQueryString();
+
+		if (Validate.isBlank(queryString))
+			return url;
+		else
+			return url + "?" + queryString;
 	}
 
 	/**
@@ -121,7 +138,7 @@ public class ServletUtil {
 	 */
 	public static Map<String, Object> getParameterMap(HttpServletRequest request, String charset) {
 		Map<String, Object> rtn = tools.MapUtil.create();
-		
+
 		@SuppressWarnings("unchecked")
 		Map<String, String[]> map = (Map<String, String[]>) request.getParameterMap();
 
