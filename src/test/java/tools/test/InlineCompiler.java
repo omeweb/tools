@@ -67,6 +67,7 @@ public class InlineCompiler {
 			System.out.println("Yipe");
 			// Create a new custom class loader, pointing to the directory that contains the compiled
 			// classes, this should point to the top of the package structure!
+			@SuppressWarnings("resource")
 			URLClassLoader classLoader = new URLClassLoader(new URL[] { new File("./").toURI().toURL() });
 			// Load the class from the classloader by name....
 			Class<?> loadedClass = classLoader.loadClass("tools.test.compile.HelloWorld");

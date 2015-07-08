@@ -126,6 +126,7 @@ public class DynamicCompiler {
 		URL[] urls = new URL[] { url };
 
 		// Create a new class loader with the directory
+		@SuppressWarnings("resource")
 		ClassLoader loader = new URLClassLoader(urls);
 
 		// Load in the class; Class.childclass should be located in
