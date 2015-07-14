@@ -10,12 +10,13 @@ import org.apache.commons.logging.LogFactory;
 import tools.StringUtil;
 
 /**
- * 可参见 http://www.tutorialspoint.com/servlets/servlets-cookies-handling.htm
+ * 可参见 http://www.tutorialspoint.com/servlets/servlets-cookies-handling.htm<br />
+ * 要实例化对象才能使用
  * 
  * @author liusan.dyf
  */
 public class CookieUtil {
-	private static final Log LOGGER = LogFactory.getLog(CookieUtil.class);
+	private static final Log logger = LogFactory.getLog(CookieUtil.class);
 
 	private HttpServletRequest request;
 	private HttpServletResponse response;
@@ -33,9 +34,7 @@ public class CookieUtil {
 	}
 
 	public void set(String name, String value, String domain, String path, int seconds) {
-
-		LOGGER.debug("name=" + name + "，value=" + value + "，seconds=" + seconds);
-
+		logger.debug("name=" + name + "，value=" + value + "，seconds=" + seconds);
 		Cookie c = new Cookie(name, value);
 
 		if (!StringUtil.isNullOrEmpty(domain))
@@ -121,9 +120,9 @@ public class CookieUtil {
 	}
 
 	public static void main(String[] args) {
-		// CookieUtil util=new CookieUtil(request,response,-1);
+		// CookieUtil util = new CookieUtil(request,response,-1);
 		// util.addCookie("name","value");
-		// String value=util.getCookieValue("name");
+		// String value = util.getCookieValue("name");
 		// System.out.println("value="+value);
 	}
 }
