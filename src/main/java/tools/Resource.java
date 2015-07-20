@@ -125,4 +125,30 @@ public class Resource {
 
 		return null;
 	}
+
+	/**
+	 * 根据文件流判断图片类型 http://www.cnblogs.com/Wendy_Yu/archive/2011/12/27/2303118.html<br />
+	 * 2015-7-20 11:33:28 by liusan.dyf
+	 * 
+	 * @param input
+	 * @return jpg/png/gif/bmp
+	 */
+	public static String detectImageType(byte[] input) {
+		// 读取文件的前几个字节来判断图片格式
+		byte[] b = new byte[4];
+		System.arraycopy(input, 0, b, 0, b.length);
+		String type = Convert.bytesToHexString(b).toUpperCase();
+
+		if (type.contains("FFD8FF")) {
+			return "jpg";
+		} else if (type.contains("89504E47")) {
+			return "png";
+		} else if (type.contains("47494638")) {
+			return "gif";
+		} else if (type.contains("424D")) {
+			return "bmp";
+		} else {
+			return "unkown";
+		}
+	}
 }

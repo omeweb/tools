@@ -414,6 +414,31 @@ public class Convert {
 	}
 
 	/**
+	 * byte数组转换成16进制字符串 2015-7-20 11:28:43 by liusan.dyf
+	 * 
+	 * @param src
+	 * @return
+	 */
+	public static String bytesToHexString(byte[] src) {
+		if (src == null || src.length <= 0) {
+			return null;
+		}
+
+		StringBuilder stringBuilder = new StringBuilder();
+
+		for (int i = 0; i < src.length; i++) {
+			int v = src[i] & 0xFF;
+			String hv = Integer.toHexString(v);
+			if (hv.length() < 2) {
+				stringBuilder.append(0);
+			}
+			stringBuilder.append(hv);
+		}
+		
+		return stringBuilder.toString();
+	}
+
+	/**
 	 * 进制转换，num=10进制的数字，t=要转换的目标进制
 	 * 
 	 * @param num
