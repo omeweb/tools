@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MapUtil {
+	private static final int CAPACITY = 32;// 2015-8-7 15:23:52 by liusan.dyf
+
 	/**
 	 * 2013-11-21 by liusan.dyf
 	 * 
@@ -107,7 +109,7 @@ public class MapUtil {
 	 */
 	public static <K, V> HashMap<K, V> create() {
 		// return new HashMap<K, V>();
-		return create(8);
+		return create(CAPACITY);
 	}
 
 	public static <K, V> HashMap<K, V> create(int initialCapacity) {
@@ -115,7 +117,7 @@ public class MapUtil {
 	}
 
 	public static <K, V> ConcurrentHashMap<K, V> concurrentHashMap() {
-		return concurrentHashMap(8);
+		return concurrentHashMap(CAPACITY);
 	}
 
 	/**

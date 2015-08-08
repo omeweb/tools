@@ -1,0 +1,9 @@
+<!--jsonrpc服务 2015-8-6 12:19:11 by liusan.dyf-->
+<filter>
+    <filter-name>jsonRpcFilter</filter-name>
+    <filter-class>tools.jsonrpc.JsonRpcFilterV2</filter-class>
+</filter>
+<filter-mapping>
+    <filter-name>jsonRpcFilter</filter-name>
+    <url-pattern>/s.do</url-pattern>
+</filter-mapping>

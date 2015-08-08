@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import tools.spring.SpringContext;
+
 /**
  * 以jsonrpc的方式响应，支持扩展getObject、authenticate、intercept，以及用简单的userName/password做验证 <br />
  * 执行顺序为：doFilter -》 authenticate -》 intercept -》JsonRpcService.invoke -》 output
@@ -55,6 +57,15 @@ public class JsonRpcFilterV2 implements Filter {
 			} catch (ClassNotFoundException e) {
 
 			}
+		} else { // 默认filter开始支持这个分支判断 2015-8-6 12:15:22 by liusan.dyf
+			String spring = "spring.";
+			if (objKey.startsWith(spring)) {
+				// spring.100的形式 2012-04-11 by liusan.dyf
+				String keyX = objKey.substring(spring.length());
+
+				// 直接调用spring容器里某对象的方法 2012-08-13
+				return SpringContext.getBean(keyX);
+			}
 		}
 		return targetObject;
 	}
@@ -89,8 +100,8 @@ public class JsonRpcFilterV2 implements Filter {
 	}
 
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-		ServletException {
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+		throws IOException, ServletException {
 		// jsoncallback 2013-11-01 by liusan.dyf
 		String jsoncallback = request.getParameter("jsoncallback");
 
@@ -129,8 +140,8 @@ public class JsonRpcFilterV2 implements Filter {
 		if (tools.Validate.isNullOrEmpty(jsoncallback)) {
 			tools.web.ServletUtil.addJsonContentType((HttpServletResponse) response, outputCharset);
 		} else {
-			tools.web.ServletUtil.addContentType((HttpServletResponse) response, "application/x-javascript",
-					outputCharset);
+			String contentType = "application/x-javascript";
+			tools.web.ServletUtil.addContentType((HttpServletResponse) response, contentType, outputCharset);
 		}
 
 		// key
@@ -164,8 +175,8 @@ public class JsonRpcFilterV2 implements Filter {
 				Object resultObj = JsonRpcService.invoke(targetObject, method, params, true);
 				result = JsonRpcService.toJsonRpcResult(rid, resultObj);
 			} catch (MethodNotFoundException e) {
-				result = JsonRpcService.toJsonRpcErrorResult(rid, JsonRpcService.METHOD_NOT_FOUND_ERROR_CODE,
-						e.getMessage());
+				int c = JsonRpcService.METHOD_NOT_FOUND_ERROR_CODE;
+				result = JsonRpcService.toJsonRpcErrorResult(rid, c, e.getMessage());
 
 				logger.error(e);
 			} catch (Exception e) {
