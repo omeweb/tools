@@ -15,8 +15,12 @@ public class SizeOfTest {
 
 		long v = RamUsageEstimator.sizeOf(arr);
 		System.out.println(v);// 4000016
-
 		System.out.println(RamUsageEstimator.humanSizeOf(arr));// 3.8 MB
+
+		// 2015-8-14 10:59:54 by liusan.dyf
+		String[] stringArray = new String[] { "abcdefg", "cd" };
+		System.out.println(RamUsageEstimator.sizeOf(stringArray));// 128
+
 	}
 }
 
