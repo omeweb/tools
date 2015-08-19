@@ -1,5 +1,6 @@
 package tools.web;
 
+import java.io.BufferedReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Date;
@@ -88,7 +89,7 @@ public class ServletUtil {
 		if (invalidIp(ip))
 			ip = request.getHeader("WL-Proxy-Client-IP");
 
-		if (invalidIp(ip))// 2012-10-16 by liusan.dyf
+		if (invalidIp(ip)) // 2012-10-16 by liusan.dyf
 			ip = request.getHeader("X-Real-IP");
 
 		if (invalidIp(ip))
@@ -101,6 +102,27 @@ public class ServletUtil {
 		 * 可是，如果通过了多级反向代理的话，X-Forwarded-For的值并不止一个，而是一串Ｉｐ值，究竟哪个才是真正的用户端的真实IP呢？ 答案是取X-Forwarded-For中第一个非unknown的有效IP字符串。
 		 * 如：X-Forwarded-For：192.168.1.110， 192.168.1.120， 192.168.1.130， 192.168.1.100用户真实IP为： 192.168.1.110
 		 */
+	}
+
+	/**
+	 * 以非key-value的方式往服务器里post数据，从该方法可以获取到这些数据 2015-8-19 12:11:40 by liusan.dyf
+	 * 
+	 * @param request
+	 * @return
+	 */
+	public static String getHttpRawPostData(HttpServletRequest request) {
+		StringBuffer sb = new StringBuffer();
+		String line = null;
+
+		try {
+			BufferedReader reader = request.getReader();
+			while ((line = reader.readLine()) != null)
+				sb.append(line);
+		} catch (Exception e) {
+			/* report an error */
+		}
+
+		return sb.toString();
 	}
 
 	/**

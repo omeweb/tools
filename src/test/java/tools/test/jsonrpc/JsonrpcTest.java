@@ -31,8 +31,9 @@ public class JsonrpcTest {
 
 		final Obj obj = new Obj();
 
-		// 测试 449ms/471ms
-		new RunTimer().run("test", 100000 * 1, new Runnable() {
+		// 测试 449ms/471ms 100000
+		// 1525.731481 100000 * 3 2015-8-19 14:27:05 by liusan.dyf
+		new RunTimer().run("test", 100000 * 3, new Runnable() {
 
 			@Override
 			public void run() {
@@ -85,21 +86,18 @@ public class JsonrpcTest {
 
 	@Test
 	public void toStringTest() throws Exception {
-		String r = JsonRpcService
-				.invokeToString(
-						new Obj(),
-						"d[{\"id\":99,\"jsonrpc\":\"2.0\",\"method\":\"addMulti\",\"params\":[1,2,3]},{\"id\":100,\"jsonrpc\":\"2.0\",\"method\":\"addMulti\",\"params\":[1,2,3,\"a\"]},{\"id\":102,\"jsonrpc\":\"2.0\",\"method\":\"throwException\",\"params\":null}]",
-						true);
+		String r = JsonRpcService.invokeToString(new Obj(),
+				"d[{\"id\":99,\"jsonrpc\":\"2.0\",\"method\":\"addMulti\",\"params\":[1,2,3]},{\"id\":100,\"jsonrpc\":\"2.0\",\"method\":\"addMulti\",\"params\":[1,2,3,\"a\"]},{\"id\":102,\"jsonrpc\":\"2.0\",\"method\":\"throwException\",\"params\":null}]",
+				true);
 		// Assert.assertEquals(6, tools.Convert.toInt(r, 0));
 		System.out.println(r);
 	}
 
 	@Test
 	public void entityParamTest() throws Exception {
-		Object r = JsonRpcService
-				.invoke(new Obj(),
-						"{\"id\":\"100\",\"jsonrpc\":\"2.0\",\"method\":\"doEntity\",\"params\":{\"error\":{\"message\":\"杜有发-message\"}}}",
-						true);
+		Object r = JsonRpcService.invoke(new Obj(),
+				"{\"id\":\"100\",\"jsonrpc\":\"2.0\",\"method\":\"doEntity\",\"params\":{\"error\":{\"message\":\"杜有发-message\"}}}",
+				true);
 
 		// 注意json的写法
 		Assert.assertEquals("杜有发-message", ((JsonRpcError) r).getMessage());
@@ -107,11 +105,9 @@ public class JsonrpcTest {
 
 	@Test
 	public void complexEntityParamTest() throws Exception {
-		String r = JsonRpcService
-				.invokeToString(
-						new Obj(),
-						"{\"id\":\"100\",\"jsonrpc\":\"2.0\",\"method\":\"doComplexEntity\",\"params\":{\"entry\":{\"startDate\":\"2011-11-02\",\"pageIndex\":10,\"pageSize\":10}}}",
-						true);
+		String r = JsonRpcService.invokeToString(new Obj(),
+				"{\"id\":\"100\",\"jsonrpc\":\"2.0\",\"method\":\"doComplexEntity\",\"params\":{\"entry\":{\"startDate\":\"2011-11-02\",\"pageIndex\":10,\"pageSize\":10}}}",
+				true);
 
 		System.out.println(r);
 
@@ -123,10 +119,9 @@ public class JsonrpcTest {
 
 			@Override
 			public void run() {
-				JsonRpcService
-						.invoke(obj,
-								"{\"id\":\"100\",\"jsonrpc\":\"2.0\",\"method\":\"doComplexEntity\",\"params\":{\"entry\":{\"startDate\":\"2011-11-02\",\"pageIndex\":10,\"pageSize\":10}}}",
-								true);
+				JsonRpcService.invoke(obj,
+						"{\"id\":\"100\",\"jsonrpc\":\"2.0\",\"method\":\"doComplexEntity\",\"params\":{\"entry\":{\"startDate\":\"2011-11-02\",\"pageIndex\":10,\"pageSize\":10}}}",
+						true);
 			}
 		});
 	}

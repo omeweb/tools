@@ -14,7 +14,7 @@ public class HttpUtil {
 	/**
 	 * 2012-02-02，场合：构造post/put请求，直接把一串内容发送过去
 	 */
-	public static final String EMPTY_KEY = "nokey";
+	public static final String EMPTY_KEY = "empty_key";
 
 	public static String decode(final String content, final String encoding) {
 		if (content == null) {
