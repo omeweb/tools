@@ -1,6 +1,5 @@
 package tools.http;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -90,7 +89,7 @@ public class HttpRequestBuilder {
 		else
 			data.clear();
 
-		data.put(HttpUtil.EMPTY_KEY, value);
+		data.put(HttpRequest.EMPTY_KEY, value);
 		return this;
 	}
 
@@ -206,17 +205,17 @@ public class HttpRequestBuilder {
 		int i = 0;
 
 		// https测试
-		String str = HttpRequestBuilder.create("https://baidu.com").get()
-				.setContentCharset("utf-8").toString();
+		String str = HttpRequestBuilder.create("https://baidu.com").get().setContentCharset("utf-8").toString();
 		System.out.println(str);
 
 		if (i == 0)
 			return;
 
 		HttpResponse res = HttpRequestBuilder.create("http://www.baidu.com/s").proxy("localhost", 8888)
-		// .data("wd=淘宝")
-				.charset("gb2312").data("wd", "淘宝").get();
-		res.setContentCharset("gb2312").saveAs(new File("d:/baidu.txt"));
+				// .header("Content-Type", "application/json")
+				// .data("wd=淘宝")
+				.charset("gb2312").data("wd", "淘宝").post();
+				// res.setContentCharset("gb2312").saveAs(new File("d:/baidu.txt"));
 
 		// head测试 2012-07-02
 		res = HttpRequestBuilder.create("http://ww1.sinaimg.cn/bmiddle/6a14bb60jw1duje404yqaj.jpg").head();

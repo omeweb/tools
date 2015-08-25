@@ -141,6 +141,14 @@ public class HttpRequest {
 	private static final String BOUNDARY = "---------------------------7db3a8184203b6";
 	private static final String MULTIPART_DATA_CONTENT_TYPE = "multipart/form-data; boundary=" + BOUNDARY;
 
+	// 2015-8-24 09:54:51 by liusan.dyf
+	public static final String CONTENT_TYPE = "Content-Type";
+
+	/**
+	 * 2012-02-02，场合：构造post/put请求，直接把一串内容发送过去
+	 */
+	public static final String EMPTY_KEY = "empty_key";
+
 	/**
 	 * 是否启用multipart/form-data; boundary=...如果是get类的请求，则忽略该参数<br/>
 	 * 如果是post，且没有files，则multipart的报文和x-www-form-urlencode的报文不一致
@@ -214,7 +222,7 @@ public class HttpRequest {
 	 */
 	public HttpResponse post(String url, String data) throws Exception {
 		HashMap<String, String> params = new HashMap<String, String>(1);
-		params.put(HttpUtil.EMPTY_KEY, data);
+		params.put(EMPTY_KEY, data);
 
 		return execute(HttpMethod.POST, url, params, null);
 	}
@@ -275,9 +283,9 @@ public class HttpRequest {
 			// 处理url
 			if (null != params && params.size() > 0) {
 				// 2012-03-06 bugfix 处理直接发送字符串的
-				if (params.containsKey(HttpUtil.EMPTY_KEY)) {
-					String q = params.get(HttpUtil.EMPTY_KEY);
-					params.remove(HttpUtil.EMPTY_KEY);
+				if (params.containsKey(EMPTY_KEY)) {
+					String q = params.get(EMPTY_KEY);
+					params.remove(EMPTY_KEY);
 
 					params.putAll(StringUtil.parseQueryString(q, HttpUtil.DEFAULT_CHARSET));
 				}
@@ -338,7 +346,7 @@ public class HttpRequest {
 			// 处理files
 			if (files != null && files.size() > 0) {
 				// 处理content type
-				connection.addRequestProperty("Content-Type", MULTIPART_DATA_CONTENT_TYPE);
+				connection.addRequestProperty(CONTENT_TYPE, MULTIPART_DATA_CONTENT_TYPE);
 
 				// 获取outputStream
 				outputStream = connection.getOutputStream();
@@ -366,11 +374,14 @@ public class HttpRequest {
 				writeln("--");
 			} else {// 没有文件
 				if (params != null && params.size() > 0) {
-					// 处理content type
-					if (multipartFormData)
-						connection.addRequestProperty("Content-Type", MULTIPART_DATA_CONTENT_TYPE);
-					else
-						connection.addRequestProperty("Content-Type", URLENCODE_CONTENT_TYPE);
+					// 2015-8-24 09:53:39 by liusan.dyf
+					if (!connection.getRequestProperties().containsKey(CONTENT_TYPE)) {
+						// 处理content type
+						if (multipartFormData)
+							connection.addRequestProperty(CONTENT_TYPE, MULTIPART_DATA_CONTENT_TYPE);
+						else
+							connection.addRequestProperty(CONTENT_TYPE, URLENCODE_CONTENT_TYPE);
+					}
 
 					// 获取outputStream
 					outputStream = connection.getOutputStream();
@@ -391,8 +402,8 @@ public class HttpRequest {
 						writeEnd();
 					} else {// 普通的post/put请求
 						// 2012-02-02 增加应用场合：直接把String或者是stream发往服务器上
-						if (params.size() == 1 && params.containsKey(HttpUtil.EMPTY_KEY)) {
-							write(params.get(HttpUtil.EMPTY_KEY));
+						if (params.size() == 1 && params.containsKey(EMPTY_KEY)) {
+							write(params.get(EMPTY_KEY));
 						} else
 							write(HttpUtil.toUrlEncodedString(params, getCharset()));
 					}
