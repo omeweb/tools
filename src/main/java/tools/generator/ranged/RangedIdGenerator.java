@@ -34,7 +34,7 @@ public class RangedIdGenerator implements IdGenerator {
 		this.rangeGetter = rangeGetter;
 
 		if (rangeGetter == null)
-			throw new NullRangeException();// IllegalArgumentException("rangeGetter不能为null");
+			throw new IllegalArgumentException("rangeGetter不能为null");
 
 		init();
 	}
@@ -63,7 +63,7 @@ public class RangedIdGenerator implements IdGenerator {
 	 */
 	private synchronized void setRange(Range r) {
 		if (r == null)
-			throw new NullRangeException();
+			throw new IllegalArgumentException("range不能为空");
 
 		// if (max.get() < r.getMax())// 重要，防止由于并发问题引起小区间在大区间后设置 2012-11-20 by liusan.dyf
 		max.compareAndSet(max.get(), r.getMax());
