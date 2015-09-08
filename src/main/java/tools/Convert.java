@@ -28,19 +28,19 @@ public class Convert {
 	/**
 	 * 基于googleMap中的算法得到两经纬度之间的距离,计算精度与谷歌地图的距离精度差不多，相差范围在0.2米以下
 	 * 
-	 * @param lon1 第一点的经度
+	 * @param lng1 第一点的经度
 	 * @param lat1 第一点的纬度
-	 * @param lon2 第二点的经度
+	 * @param lng2 第二点的经度
 	 * @param lat3 第二点的纬度
 	 * @return 返回的距离，单位km
 	 */
-	public static double getDistance(double lon1, double lat1, double lon2, double lat2) {
+	public static double getDistance(double lng1, double lat1, double lng2, double lat2) {
 		double radLat1 = rad(lat1);
 		double radLat2 = rad(lat2);
 		double a = radLat1 - radLat2;
-		double b = rad(lon1) - rad(lon2);
-		double s = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a / 2), 2) + Math.cos(radLat1) * Math.cos(radLat2)
-				* Math.pow(Math.sin(b / 2), 2)));
+		double b = rad(lng1) - rad(lng2);
+		double s = 2 * Math.asin(Math.sqrt(
+				Math.pow(Math.sin(a / 2), 2) + Math.cos(radLat1) * Math.cos(radLat2) * Math.pow(Math.sin(b / 2), 2)));
 		s = s * EARTH_RADIUS;
 		// s = Math.round(s * 10000) / 10000;
 		return s;
@@ -519,7 +519,7 @@ public class Convert {
 	}
 
 	public static String join(Object coll, String delimiter) {
-		if (coll == null)// 2011-11-10
+		if (coll == null) // 2011-11-10
 			return "";
 
 		StringBuilder sb = new StringBuilder();
@@ -681,7 +681,7 @@ public class Convert {
 		if (value instanceof Long) // 如果是long，直接返回就OK
 			return (Long) value;
 
-		if (value instanceof Date)// 解决时间问题
+		if (value instanceof Date) // 解决时间问题
 			return ((Date) value).getTime() / 1000;
 
 		String v = value.toString();
@@ -763,7 +763,7 @@ public class Convert {
 		// d=15702.666666666666
 		// i=15702.666666667
 
-		if (d > i || (i - d) < 0.000000001)// 或者的分支判断，是解决传入的ts是整天的时候，当差距如此之小，当作无
+		if (d > i || (i - d) < 0.000000001) // 或者的分支判断，是解决传入的ts是整天的时候，当差距如此之小，当作无
 			return (long) (i * day);// 当天
 		else
 			return (long) ((i - 1) * day);// 前一天
@@ -774,7 +774,7 @@ public class Convert {
 	}
 
 	public static long toUnixTime(Date dateTime) {
-		if (dateTime == null)// 2012-12-26 by liusan.dyf
+		if (dateTime == null) // 2012-12-26 by liusan.dyf
 			return toUnixTime();
 
 		return dateTime.getTime() / 1000L;

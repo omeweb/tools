@@ -53,6 +53,25 @@ public class ServletUtil {
 	public static String getString(HttpServletRequest request, String key) {
 		return request.getParameter(key);
 	}
+	
+	/**
+	 * 得到当前请求的域名信息，不以/结尾，比如【http://m.omeweb.com】 2015-9-1 14:19:47 by liusan.dyf
+	 * 
+	 * @param request
+	 * @return
+	 */
+	public static String getServerUrl(HttpServletRequest request) {
+		int port = request.getServerPort();
+
+		StringBuilder result = new StringBuilder();
+		result.append(request.getScheme()).append("://").append(request.getServerName());
+
+		if (port != 80) {
+			result.append(':').append(port);
+		}
+
+		return result.toString();
+	}
 
 	/**
 	 * 得到请求的url，附带queryString参数，但是不包含post的参数 2015-6-19 10:38:13 by liusan.dyf
@@ -60,7 +79,7 @@ public class ServletUtil {
 	 * @param request
 	 * @return
 	 */
-	public static String getRequestUrl(HttpServletRequest request) {
+	public static String getRequestUrlWithQueryString(HttpServletRequest request) {
 		String url = request.getRequestURL().toString();
 		String queryString = request.getQueryString();
 
