@@ -178,6 +178,15 @@ public class HttpRequestBuilder {
 	}
 
 	/**
+	 * 增加trace请求 2015-9-9 17:05:18 by liusan.dyf
+	 * 
+	 * @return
+	 */
+	public HttpResponse trace() {
+		return this.execute(HttpMethod.TRACE);
+	}
+
+	/**
 	 * method大写；为了使用方便，这里隐藏了Exception，注意catch 2012-02-17
 	 * 
 	 * @param method
