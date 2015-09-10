@@ -1,6 +1,7 @@
 package tools.web;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Date;
@@ -15,7 +16,10 @@ import tools.StringUtil;
 import tools.Validate;
 
 public class ServletUtil {
-	private static final String CONTENT_TYPE = "Content-Type";
+	public static final String CONTENT_TYPE = "Content-Type";
+	public static final String ETAG = "ETag";
+	public static final String IF_NONE_MATCH = "If-None-Match";
+	public static final String LAST_MODIFIED = "Last-Modified";
 
 	// ============如果在filter的init方法里调用了registerFilter方法 2015-4-24 15:59:10 by liusan.dyf
 	private static Map<String, Filter> filters = tools.MapUtil.create();
@@ -53,7 +57,73 @@ public class ServletUtil {
 	public static String getString(HttpServletRequest request, String key) {
 		return request.getParameter(key);
 	}
-	
+
+	public static String generateETagHeaderValue(String s) {
+		StringBuilder sb = new StringBuilder("\"0");
+		sb.append(s);
+		sb.append('"');
+		return sb.toString();
+	}
+
+	/**
+	 * 输出文本类的内容给HttpServletResponse，目前是js/css/html/htm 2015-9-10 14:37:34 by liusan.dyf
+	 * 
+	 * @param request
+	 * @param response
+	 * @param content
+	 * @param charset
+	 * @param lastUpdate
+	 * @return
+	 * @throws IOException
+	 */
+	public static boolean output(HttpServletRequest request, HttpServletResponse response, String content,
+			String charset, Date lastUpdate) throws IOException {
+		// ---判断参数
+		if (request == null)
+			return false;
+
+		String v = content;
+		if (tools.Validate.isNullOrEmpty(v))
+			return false;
+
+		if (lastUpdate == null)
+			lastUpdate = new Date();
+
+		// url作为etag的一部分
+		String url = request.getRequestURI();
+
+		// 得到etag，这里是对应value的hashcode 2015-6-5 21:24:13 by liusan.dyf
+		// from http://www.infoq.com/cn/articles/etags
+
+		String hashContent = url + "@" + tools.DateTime.format(lastUpdate, null);// 2015-9-10
+		String etag = generateETagHeaderValue(String.valueOf(hashContent.hashCode()));
+
+		response.setHeader(ETAG, etag); // always store the ETag in the header
+		String requestETag = request.getHeader(IF_NONE_MATCH);
+
+		// 比对etag 2015-6-5 21:32:08 by liusan.dyf
+		if (etag.equals(requestETag)) {
+			response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+			response.setHeader(LAST_MODIFIED, request.getHeader("If-Modified-Since"));
+			return true;
+		}
+
+		// 你需注意到，我们还设置了Last-Modified头。这被认为是为服务器产生内容的正确形式，因为其迎合了不认识ETag头的客户端。
+
+		// 输出内容
+		if (url.endsWith(".js")) // 一些js我们也放到缓存里去，方便部署和发布 2013-02-28
+			response.addHeader(CONTENT_TYPE, "application/x-javascript; charset=" + charset);
+		else if (url.endsWith(".css")) // 2013-04-19 by liusan.dyf
+			response.addHeader(CONTENT_TYPE, "text/css; charset=" + charset);
+		else if (url.endsWith(".htm") || url.endsWith(".html") || url.endsWith("/"))
+			response.addHeader(CONTENT_TYPE, "text/html; charset=" + charset);
+
+		response.getWriter().write(v);
+		response.setDateHeader(LAST_MODIFIED, lastUpdate.getTime());
+
+		return true;
+	}
+
 	/**
 	 * 得到当前请求的域名信息，不以/结尾，比如【http://m.omeweb.com】 2015-9-1 14:19:47 by liusan.dyf
 	 * 
