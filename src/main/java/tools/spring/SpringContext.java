@@ -19,6 +19,7 @@ public class SpringContext implements ApplicationContextAware {
 	 * 可以存储多个ApplicationContext 2013-02-28 by liusan.dyf
 	 */
 	private static Map<String, ApplicationContext> all = tools.MapUtil.concurrentHashMap();
+	private static Map<String, Object> cachedBeans = tools.MapUtil.concurrentHashMap();// 2015-9-11 10:33:32 by 一篑
 
 	/**
 	 * 如果该name没有配置，则返回null；不做containsBean判断则报错：NoSuchBeanDefinitionException
@@ -27,9 +28,19 @@ public class SpringContext implements ApplicationContextAware {
 	 * @return
 	 */
 	public static Object getBean(String name) {
+		if (cachedBeans.containsKey(name)) {// ApplicationContext.getBean内部有锁，这里做个缓存 2015-9-11 10:33:32 by 一篑
+			return cachedBeans.get(name);
+		}
+
 		for (ApplicationContext item : all.values()) {
-			if (item.containsBean(name))
-				return item.getBean(name);
+			// if (item.containsBean(name))
+			// return item.getBean(name);
+
+			if (item.containsBean(name)) {
+				Object bean = item.getBean(name);
+				cachedBeans.put(name, bean);// 放入缓存 2015-9-11 10:31:54 by 一篑
+				return bean;
+			}
 		}
 
 		return null;
