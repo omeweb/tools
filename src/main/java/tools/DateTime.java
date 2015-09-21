@@ -3,7 +3,6 @@ package tools;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
-
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -16,8 +15,42 @@ import org.joda.time.format.DateTimeFormatter;
  */
 public class DateTime {
 	private static Map<String, DateTimeFormatter> formatters = new java.util.concurrent.ConcurrentHashMap<String, DateTimeFormatter>();
-
 	private static final String DEFAULT_FORMATTER = "YYYY-MM-dd HH:mm:ss";
+
+	// ---------------2015-9-21 11:49:09 by liusan.dyf
+	private static volatile long currentTimeMillis = System.currentTimeMillis();// 当前时间
+
+	static {
+		// 每隔一定的时间来更新时间戳，在高并发下比较有优势，但是精度有限
+		// 更多参见：http://blog.sina.com.cn/s/blog_7ce08df70101ig4r.html
+		Thread th = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while (true) {
+					try {
+						Thread.sleep(1);
+						// TimeUnit.MILLISECONDS.sleep(1);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					currentTimeMillis = System.currentTimeMillis();
+				}
+			}
+		}, "systemTimeMillisUpdater");
+
+		th.setDaemon(true);// 不然不会随主进程一起关闭
+		th.start();
+	}
+
+	public static long currentTimeMillis() {
+		return currentTimeMillis;
+	}
+
+	public static long timestamp() {
+		return currentTimeMillis / 1000;
+	}
+
+	// ---------------end of currentTimeMillis
 
 	/**
 	 * 返回2个时间之差，单位为秒；如果入参不合法，返回-1。2014-05-12 by liusan.dyf
@@ -256,8 +289,18 @@ public class DateTime {
 		System.out.println(diff(new Date(), plusSeconds(200)));
 
 		//
-		System.out.println(getFirstDayOfMonth(2014, 10));		
+		System.out.println(getFirstDayOfMonth(2014, 10));
 		System.out.println(getFirstDayOfMonth(null));
 		System.out.println(getLastDayOfMonth(null));
+
+		// 2015-9-21 12:12:27 by liusan.dyf
+		System.out.println(currentTimeMillis() + "." + System.currentTimeMillis());
+		Global.sleep(50);
+		System.out.println(currentTimeMillis() + "." + System.currentTimeMillis());
+		Global.sleep(500);
+		System.out.println(currentTimeMillis() + "." + System.currentTimeMillis());
+		System.out.println(timestamp());
+
+		// Global.sleep(50000);
 	}
 }

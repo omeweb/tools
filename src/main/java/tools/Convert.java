@@ -770,7 +770,8 @@ public class Convert {
 	}
 
 	public static long toUnixTime() {
-		return System.currentTimeMillis() / 1000L;
+		return DateTime.timestamp();// 2015-9-21 12:13:18 by liusan.dyf
+		// return System.currentTimeMillis() / 1000L;
 	}
 
 	public static long toUnixTime(Date dateTime) {
