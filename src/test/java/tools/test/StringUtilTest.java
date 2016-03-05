@@ -341,13 +341,34 @@ public class StringUtilTest {
 	}
 
 	@Test
+	public void getFeatureV2Test() {
+		final String str = "name=杜有发@age=28,type=dev,boss=false , sex=true|, a=a@#$%^b ";
+		Assert.assertEquals("28", StringUtil.getFeature(str, "age="));
+		Assert.assertEquals("false", StringUtil.getFeature(str, "boss="));
+		Assert.assertEquals("杜有发", StringUtil.getFeature(str, "name="));
+		Assert.assertEquals("", StringUtil.getFeature(str, "namex="));
+		Assert.assertEquals("true", StringUtil.getFeature(str, "sex="));
+		Assert.assertEquals("a", StringUtil.getFeature(str, "a="));
+
+		new RunTimer().run("getFeatureV2", 100000, new Runnable() {
+
+			@Override
+			public void run() {
+				Assert.assertEquals("28", StringUtil.getFeature(str, "age="));// 55ms
+			}
+		});
+	}
+
+	@Test
 	public void getFeatureTest() {
+		@SuppressWarnings("deprecation")
 		String act = StringUtil.getFeature("name=杜有发@age=28", "age", "@");
 		String exp = "28";
 		Assert.assertEquals(exp, act);
 
 		new RunTimer().run("getFeature", 100000, new Runnable() {
 
+			@SuppressWarnings("deprecation")
 			@Override
 			public void run() {
 				StringUtil.getFeature("name=杜有发@age=28", "age", "@");// 66ms

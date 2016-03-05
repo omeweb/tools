@@ -73,6 +73,10 @@ public class HttpRequestBuilder {
 	public HttpRequestBuilder data(String name, String value) {
 		if (data == null)
 			data = new HashMap<String, String>();
+
+		if (value == null)
+			return this;
+
 		data.put(name, value);
 		return this;
 	}
@@ -214,7 +218,7 @@ public class HttpRequestBuilder {
 		int i = 0;
 
 		// https测试
-		String str = HttpRequestBuilder.create("https://baidu.com").get().setContentCharset("utf-8").toString();
+		String str = HttpRequestBuilder.create("http://127.0.0.1/s.do").cookie("auth", "57526:六三:*:1451961451:a6951f62eaf7d4a34f2ed5c8a000792d").get().setContentCharset("utf-8").toString();
 		System.out.println(str);
 
 		if (i == 0)

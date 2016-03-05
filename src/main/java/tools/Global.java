@@ -24,7 +24,7 @@ public class Global extends tools.InitializeOnce {
 	 */
 	public static int V = 0;
 
-	//private static EventContainer eventContainer = null;
+	// private static EventContainer eventContainer = null;
 
 	public static final String LOCAL_IP = tools.StringUtil.getLocalIp();// 本机IP
 
@@ -165,11 +165,11 @@ public class Global extends tools.InitializeOnce {
 	 */
 	@Override
 	protected void doInitialize() {
-		logger.warn("开始初始化global");
+		// logger.warn("开始初始化global");
 
 		// ===初始化工作
-//		if (eventContainer != null)
-//			eventContainer.onEvent(this, EventArgs.create(this).setType("global.before-init"));
+		// if (eventContainer != null)
+		// eventContainer.onEvent(this, EventArgs.create(this).setType("global.before-init"));
 	}
 
 	/**

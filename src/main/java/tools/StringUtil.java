@@ -488,7 +488,7 @@ public class StringUtil {
 	public static String md5(byte[] source) {
 		String s = null;
 		char hexDigits[] = { // 用来将字节转换成 16 进制表示的字符
-		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+				'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 		try {
 			java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
 			md.update(source);
@@ -707,6 +707,28 @@ public class StringUtil {
 
 	/************** end of ngrams **********************************/
 
+	/**
+	 * 如果str的长度大于len，则进行截取，同时按要求追加append，比如省略号 2015-12-28 09:00:24 by liusan.dyf
+	 * 
+	 * @param str
+	 * @param len
+	 * @param append
+	 * @return
+	 */
+	public static String maxLength(String str, int len, String append) {
+		if (str == null)
+			return null;
+
+		if (str.length() <= len)
+			return str;
+		else {
+			if (append == null)
+				return str.substring(0, len);
+			else
+				return str.substring(0, len) + append;
+		}
+	}
+
 	public static String[] split(String string, char delimiter) {
 		if (string == null || string.length() == 0)// 2014-12-01 by 六三
 			return null;
@@ -912,11 +934,47 @@ public class StringUtil {
 	/**
 	 * 得到【name=杜有发,age=28】里的name的值，如果key有多个，只返回第一个 2012-04-25
 	 * 
+	 * @param source name=杜有发,age=28
+	 * @param prefix name=
+	 * @return
+	 */
+	public static String getFeature(String source, String prefix) {
+		if (isNullOrEmpty(source))
+			return EMPTY;
+
+		int index = source.indexOf(prefix);
+		if (index == -1)
+			return EMPTY;
+
+		int len = source.length();
+
+		index += prefix.length();
+		int endIndex = index;
+		char ch;
+		for (; endIndex < len; endIndex++) {
+			ch = source.charAt(endIndex);
+
+			// 找到第一个非数字、字母、函数的字符为止 2016-1-7 11:03:19 by liusan.dyf
+			if (!Validate.isAsciiNumericChar(ch) && !Validate.isAsciiAlphaChar(ch)
+					&& !tools.Validate.isChineseChar(ch)) {
+				break;
+			}
+		}
+
+		// System.out.println(index + "," + endIndex);
+
+		return source.substring(index, endIndex);
+	}
+
+	/**
+	 * 得到【name=杜有发,age=28】里的name的值，如果key有多个，只返回第一个 2012-04-25
+	 * 
 	 * @param source
 	 * @param name
 	 * @param separator 分隔符，推荐用逗号，不过可以用更特殊的符号
 	 * @return
 	 */
+	@Deprecated
 	public static String getFeature(String source, String name, String separator) {
 		if (isNullOrEmpty(source))
 			return EMPTY;

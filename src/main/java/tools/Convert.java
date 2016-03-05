@@ -330,15 +330,6 @@ public class Convert {
 		}
 	}
 
-	public static long toLong(byte[] bytes) {
-		long result = 0;
-		int len = 8;
-		for (int i = 0; i < bytes.length; i++) {
-			result += ((bytes[i] & 0xFF) << ((len - 1 - i) * BITS));
-		}
-		return result;
-	}
-
 	public static int toInt(byte[] bytes) {
 		int result = 0;
 		int len = 4;
@@ -346,6 +337,14 @@ public class Convert {
 			result += ((bytes[i] & 0xFF) << ((len - 1 - i) * BITS));
 		}
 		return result;
+	}
+	
+	public static int toInt(char ch) {
+		int val = ch - '0';
+		if (val < 0 || val > 9) {
+			throw new IllegalArgumentException(ch + " is not a numberic char");
+		}
+		return val;
 	}
 
 	public static byte[] intToBytes(int var) {
@@ -358,14 +357,22 @@ public class Convert {
 		return result;
 	}
 
-	public static byte[] longToBytes(long var) {
-		int len = 8;
-		byte[] result = new byte[len];
+	public static byte[] toBytes(long l) {
+	    byte[] result = new byte[8];
+	    for (int i = 7; i >= 0; i--) {
+	        result[i] = (byte)(l & 0xFF);
+	        l >>= 8;
+	    }
+	    return result;
+	}
 
-		for (int i = 0; i < len; i++) {
-			result[i] = (byte) (var >> ((len - 1 - i) * BITS));
-		}
-		return result;
+	public static long toLong(byte[] b) {
+	    long result = 0;
+	    for (int i = 0; i < 8; i++) {
+	        result <<= 8;
+	        result |= (b[i] & 0xFF);
+	    }
+	    return result;
 	}
 
 	static String toHexCode(int v) {

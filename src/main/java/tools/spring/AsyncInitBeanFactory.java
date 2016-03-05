@@ -16,7 +16,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
- * idea和部分代码来自【书全】<br />
+ * idea和部分代码来自【书全】，耗时统计是通过拦截和注入init-method来实现<br />
  * 
  * @author <a href="mailto:liusan.dyf@taobao.com">liusan.dyf</a>
  * @version 1.0
@@ -35,6 +35,12 @@ public class AsyncInitBeanFactory extends DefaultListableBeanFactory {
 		this(null, DEFAULT_POOL_SIZE);
 	}
 
+	/**
+	 * 构造函数
+	 * 
+	 * @param parentBeanFactory
+	 * @param poolSize
+	 */
 	public AsyncInitBeanFactory(BeanFactory parentBeanFactory, int poolSize) {
 		super(parentBeanFactory);
 
@@ -59,10 +65,10 @@ public class AsyncInitBeanFactory extends DefaultListableBeanFactory {
 	 */
 	public static ApplicationContext initBeans(String[] locations, final int n) {
 		ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(locations) {
-			private AsyncInitBeanFactory beanFactory;
+			private AsyncInitBeanFactory beanFactory;// 创建本类的一个实例
 
 			/**
-			 * 这里要重写 createBeanFactory
+			 * 这里要重写 createBeanFactory，返回一个自定义的BeanFactory
 			 */
 			@Override
 			protected DefaultListableBeanFactory createBeanFactory() {
@@ -72,12 +78,16 @@ public class AsyncInitBeanFactory extends DefaultListableBeanFactory {
 
 			@Override
 			protected void finishRefresh() {
-				beanFactory.finish();// 必须
+				beanFactory.waitToFinish();// 必须
 				super.finishRefresh();
+
+				logger.warn(beanFactory + " = " + this.getBeanFactory() + " ?");
 			}
 		};
 
 		// System.out.println(ctx.getStartupDate());
+		// ctx.refresh();
+
 		return ctx;
 	}
 
@@ -86,6 +96,7 @@ public class AsyncInitBeanFactory extends DefaultListableBeanFactory {
 		throws Throwable {
 		// System.out.println("class=" + bean.getClass() + ", method=" + mbd.getInitMethodName());
 
+		// 原本是要直接去调用super.invokeCustomInitMethod的，这里没有，而是生成任务放到线程池里等待并行完成 2015-12-17 10:50:15 by liusan.dyf
 		// super.invokeCustomInitMethod(beanName, bean, mbd);
 
 		// 用线程池异步初始化
@@ -103,6 +114,14 @@ public class AsyncInitBeanFactory extends DefaultListableBeanFactory {
 		list.add(f);
 	}
 
+	/**
+	 * 真正的去调用super.invokeCustomInitMethod，同时加入了统计耗时的功能
+	 * 
+	 * @param beanName
+	 * @param bean
+	 * @param mbd
+	 * @throws Throwable
+	 */
 	private void doInvokeCustomInitMethod(final String beanName, final Object bean, final RootBeanDefinition mbd)
 		throws Throwable {
 		// long id = Thread.currentThread().getId();
@@ -115,11 +134,17 @@ public class AsyncInitBeanFactory extends DefaultListableBeanFactory {
 		// 真正的开始调用
 		super.invokeCustomInitMethod(beanName, bean, mbd);
 
+		// 调用完毕，统计耗时
 		logger.warn("invoke " + info + ", cost " + (System.currentTimeMillis() - start));
 	}
 
-	public boolean finish() {
-		if (list.size() == 0)
+	/**
+	 * 等待所有的bean的init方法都调用完毕 2015-12-17 11:11:42 by liusan.dyf
+	 * 
+	 * @return
+	 */
+	public boolean waitToFinish() {
+		if (list == null || list.size() == 0) // 如果已经调用了这个方法，则要保证再次调用不能出异常
 			return false;
 
 		try {

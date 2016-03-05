@@ -198,7 +198,7 @@ public class DateTime {
 			return rtn;
 
 		// 做缓存
-		if (!formatters.containsKey(pattern)) {
+		if (!formatters.containsKey(pattern)) { // ___#1___
 			synchronized (formatters) {
 				if (!formatters.containsKey(pattern)) {// double check
 					rtn = DateTimeFormat.forPattern(pattern);
@@ -208,7 +208,10 @@ public class DateTime {
 			}
 		}
 
-		return rtn;
+		if (rtn != null) // 如果已经有值，直接返回 2015-12-17 10:17:25 by liusan.dyf
+			return rtn;
+
+		return formatters.get(pattern); // 如果___#1___不成立，那rtn为null，这里再次从map里取 2015-12-17 10:18:14 by liusan.dyf
 	}
 
 	/**

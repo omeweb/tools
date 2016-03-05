@@ -39,6 +39,9 @@ public class SpringBeanPostPrcessor implements BeanPostProcessor {
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		counter.incrementAndGet();
 		map.put(beanName, 0 - System.currentTimeMillis());
+
+		logger.warn("______正准备初始化bean: " + beanName);
+
 		return bean;
 	}
 

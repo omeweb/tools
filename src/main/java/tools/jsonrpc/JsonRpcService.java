@@ -212,14 +212,13 @@ public class JsonRpcService {
 				temp = new JsonRpcError(id, INVALID_PARAMS_ERROR_CODE, getErrorMessage(e));
 			} // catch (IllegalAccessException e) {
 				// e.printStackTrace();
-			// }
-			// 在反射机制中，如果当前执行的方法所调用的方法抛出异常，会被包装成这个异常 2011-11-09
+				// }
+				// 在反射机制中，如果当前执行的方法所调用的方法抛出异常，会被包装成这个异常 2011-11-09
 			catch (InvocationTargetException e) { // 方法里抛出IllegalArgumentException，经过反射后，变成InvocationTargetException
 				logger.error(e);
 				temp = new JsonRpcError(id, INVALID_PARAMS_ERROR_CODE, getErrorMessage(e.getTargetException()));
 				// 这里只取message，异常类型名java.lang.Exception就不需要了
 				// 2011-11-05 为了方便调试，显示所有消息
-
 			} catch (MethodNotFoundException e) {
 				logger.error(e);
 				temp = new JsonRpcError(id, METHOD_NOT_FOUND_ERROR_CODE, getErrorMessage(e));
@@ -312,7 +311,8 @@ public class JsonRpcService {
 		return invokeInternal(obj, methodName, params, autoRegister);
 	}
 
-	static Object invokeInternal(Object obj, String methodName, JsonNode params, boolean autoRegister) throws Exception {
+	static Object invokeInternal(Object obj, String methodName, JsonNode params, boolean autoRegister)
+		throws Exception {
 		// 100000 times = 375
 		// return null;
 
@@ -342,7 +342,7 @@ public class JsonRpcService {
 					registerMethod(obj.getClass(), methodName);
 				}
 			} else {
-				throw new MethodNotFoundException(methodName);// 找不到方法
+				throw new MethodNotFoundException(obj.getClass().getName() + "." + methodName);// 找不到方法
 			}
 		}
 
@@ -752,7 +752,7 @@ public class JsonRpcService {
 					p.setIndex(lval.index(i));// 2011-11-14 index -> class文件里的slot
 					plist.add(p);
 				}
-			}// end for
+			} // end for
 
 			// ------------输出示例信息如下：
 			// min=9
@@ -775,9 +775,9 @@ public class JsonRpcService {
 			for (Parameter item : plist) {
 				paramNames.add(item.getName());
 				// System.out.println(item.getIndex());
-			}// end for
+			} // end for
 
-		}// end if (found)
+		} // end if (found)
 
 		logger.debug("在" + clazz + "里找寻方法" + methodName + "：" + found);
 
