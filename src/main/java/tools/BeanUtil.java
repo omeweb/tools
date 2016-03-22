@@ -44,7 +44,7 @@ public class BeanUtil {
 
 		BeanMap bm = BeanMap.create(destObj);
 		bm.putAll(m);
-		
+
 		// java.util.Set<String> keys = m.keySet();
 		// for (String item : keys) {
 		// bm.put(item, m.get(item));// 类型不匹配时会抛出 java.lang.ClassCastException:

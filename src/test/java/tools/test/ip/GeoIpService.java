@@ -14,7 +14,7 @@ import com.carrotsearch.sizeof.RamUsageEstimator;
 import tools.Action;
 
 /**
- * 数据文件来自：http://ip.taobao.org:9999/ipdata_download.html，格式8
+ * 数据文件来自：http://ip.taobao.org:9999/ipdata_download.html，格式8，300多M
  * 
  * @author <a href="mailto:liusan.dyf@taobao.com">liusan.dyf</a>
  * @version 1.0
@@ -31,7 +31,7 @@ public class GeoIpService extends tools.InitializeOnce {
 	private Map<String, String> constantMap = null;
 	private byte[] cache = null;
 	private int count = 0;// 记录总数
-	private String[] infoArr = null;
+	private String[] infoArr = null;// 把ip位置信息和isp用一个large array来存储
 
 	//
 	private int itemLength = 0;// 每一个item的长度
@@ -54,7 +54,6 @@ public class GeoIpService extends tools.InitializeOnce {
 	 * 
 	 * @param file
 	 * @return
-	 * @throws Throwable
 	 */
 	private Map<String, String> loadConstants(File file) {
 		// String file = "D:/Downloads/ip/language.txt";
@@ -71,8 +70,8 @@ public class GeoIpService extends tools.InitializeOnce {
 			String[] arr = tools.StringUtil.split(item, SEPARATOR);// country,SV,en,EL SALVADOR
 			if ("cn".equals(arr[2]) || true) { // 只加载有限的条目
 				// country,area,region,city,county,isp
-				String key = arr[2] + SEPARATOR + arr[0] + SEPARATOR + arr[1];// -> contry.cn
-				String value = arr[3];// -> china
+				String key = arr[2] + SEPARATOR + arr[0] + SEPARATOR + arr[1];// key -> en.contry.HK，value -> HongKong
+				String value = arr[3];// -> China
 
 				if (map.containsKey(key)) {
 					println("重复的key：" + key + " > " + item + ", old value > " + map.get(key));
@@ -135,7 +134,7 @@ public class GeoIpService extends tools.InitializeOnce {
 
 		try {
 			while (it.hasNext()) {
-				count++;// 记录计数
+				this.count++;// 记录计数
 				String line = it.nextLine();// 16806144,16806399,JP,JP_36,Matsue,-1,2000774,35.4722,133.051
 
 				// 解析line
@@ -161,9 +160,8 @@ public class GeoIpService extends tools.InitializeOnce {
 				// println(line);
 			}
 
-			itemLength = 20;// 按照上面的格式，长度=8+8+4
+			this.itemLength = 20;// 按照上面的格式，长度=8+8+4
 		} catch (Throwable e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			LineIterator.closeQuietly(it);
@@ -179,18 +177,19 @@ public class GeoIpService extends tools.InitializeOnce {
 			}
 		});
 
-		infoArr = tempInfoArr;
+		this.infoArr = tempInfoArr;
 
 		// -------------------看内存消耗情况
 		println("data load over, cost " + (System.currentTimeMillis() - startMs));
 		println("lines count " + count);
 		println("map count " + infoMap.size());
 		println("map size " + RamUsageEstimator.humanSizeOf(infoMap));// 16.5MB
+		println("info array size " + RamUsageEstimator.humanSizeOf(this.infoArr));// 10.1 MB
 
-		cache = buf.toByteArray();
+		this.cache = buf.toByteArray();
 
-		println("cache langth " + cache.length);
-		println("cache size " + RamUsageEstimator.humanSizeOf(cache));// 116.5 MB
+		println("cache langth " + this.cache.length);
+		println("cache size " + RamUsageEstimator.humanSizeOf(this.cache));// 116.5 MB
 		// println("map " + map);
 
 		// -------------------清理
@@ -205,6 +204,10 @@ public class GeoIpService extends tools.InitializeOnce {
 	}
 
 	public IpEntry getIpInfo(String ip, String lang) {
+		if (!this.isInitialized()) {
+			throw new RuntimeException("not init yet");
+		}
+
 		// -------------------查找
 		// String ip = "1.0.130.193";
 		long target = tools.Convert.ipToLong(ip);// 16810689;
@@ -215,21 +218,29 @@ public class GeoIpService extends tools.InitializeOnce {
 
 		// -------------------二分法查找
 		int begin = 0;
-		int end = count - 1;
+		int end = this.count - 1;
 		int searchTimes = 0;// 统计查找次数
 		byte[] temp = new byte[8];// 获取ip起始位置的临时变量
+		byte[] tempItem = new byte[itemLength];//
 		while (begin <= end) {
 			searchTimes++;// 记录查找次数
 			int middle = (begin + end) / 2;
 
-			// 一条记录是20字节，所以是从 middle * itemLength 开始的itemLength字节，前8是v1，再8是v2
-			System.arraycopy(cache, middle * itemLength, temp, 0, 8);// 拷贝前8个
-			long v1 = tools.Convert.toLong(temp);
+			// // ---一条记录是20字节，所以是从 middle * itemLength 开始的itemLength字节，前8是v1，再8是v2
+			// System.arraycopy(cache, middle * itemLength, temp, 0, 8);// 拷贝前8个
+			// long v1 = tools.Convert.toLong(temp);
+			//
+			// System.arraycopy(cache, middle * itemLength + 8, temp, 0, 8);// 再拷贝8个
+			// long v2 = tools.Convert.toLong(temp);
 
-			System.arraycopy(cache, middle * itemLength + 8, temp, 0, 8);// 再拷贝8个
+			// ---方案2，先拷贝一个单元到小的数组里，然后直接操作小数组 2016-3-5 11:19:18 by liusan.dyf
+			System.arraycopy(this.cache, middle * this.itemLength, tempItem, 0, this.itemLength);// 拷贝一个单元到tempItem
+			System.arraycopy(tempItem, 0, temp, 0, 8);// 拷贝前8个
+			long v1 = tools.Convert.toLong(temp);
+			System.arraycopy(tempItem, 8, temp, 0, 8);// 再拷贝8个
 			long v2 = tools.Convert.toLong(temp);
 
-			// // 调试之用
+			// // ---调试之用
 			// if ((v1 > v2) || v1 <= 0 || v2 <= 0) {
 			// println("convert error, ip=" + ip + ", long-ip=" + target + ", v1=" + v1 + ", v2=" + v2);
 			// break;
@@ -238,11 +249,11 @@ public class GeoIpService extends tools.InitializeOnce {
 			if (v1 <= target && v2 >= target) {
 				// ---找到ip信息的index
 				byte[] infoIndex = new byte[4];
-				System.arraycopy(cache, middle * itemLength + 8 + 8, infoIndex, 0, 4);// 再拷贝4个
+				System.arraycopy(tempItem, 8 + 8, infoIndex, 0, 4);// 再拷贝4个
 				int x = tools.Convert.toInt(infoIndex);
 
 				// ---找到位置信息
-				String itemInfo = infoArr[x];// -> TH,TH_66,Phatthalung
+				String itemInfo = this.infoArr[x];// -> TH,TH_66,Phatthalung
 
 				// ---从字段里解析出国家、省份、城市
 				String[] itemInfoArr = tools.StringUtil.split(itemInfo, SEPARATOR);
@@ -256,13 +267,13 @@ public class GeoIpService extends tools.InitializeOnce {
 				entry.country = constantMap.get(lang + ",country," + countryCode);
 				entry.region = constantMap.get(lang + ",region," + regionCode);
 				entry.city = city;
+				entry.lang = lang;
+				entry.searchTimes = searchTimes;
 
 				// ---中国的city在常量表里是存在的，这里check一下
 				String cityX = constantMap.get(lang + ",city," + city);
 				if (cityX != null)
 					entry.city = cityX;
-
-				entry.searchTimes = searchTimes;
 
 				// ---跳出查找
 				return entry;
@@ -335,5 +346,6 @@ class IpEntry {
 	public String region;
 	public String city;
 	public String ip;
+	public String lang;
 	public int searchTimes;
 }
