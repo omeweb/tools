@@ -47,6 +47,7 @@ public class FileDataStore implements DataStore {
 			return 0;
 		try {
 			// 可能不支持unix系统
+			@SuppressWarnings("deprecation")
 			String v = IOUtils.toString(new URL("file:///" + filePath));
 			return Convert.toLong(v, 0);
 		} catch (MalformedURLException e) {

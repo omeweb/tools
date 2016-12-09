@@ -1,5 +1,7 @@
 package tools.test;
 
+import java.util.concurrent.atomic.AtomicIntegerArray;
+
 import com.carrotsearch.sizeof.RamUsageEstimator;
 
 /**
@@ -19,7 +21,13 @@ public class SizeOfTest {
 
 		// 2015-8-14 10:59:54 by liusan.dyf
 		String[] stringArray = new String[] { "abcdefg", "cd" };
-		System.out.println(RamUsageEstimator.sizeOf(stringArray));// 128
+		System.out.println(RamUsageEstimator.sizeOf(stringArray));// 144
+
+		// 2016-7-20 16:02:39 by liusan.dyf
+		AtomicIntegerArray aia = new AtomicIntegerArray(1024 * 1024);
+		System.out.println(RamUsageEstimator.humanSizeOf(aia));// 4 MB
+
+		System.out.println(RamUsageEstimator.humanSizeOf(new int[1024 * 20]));// 80K
 
 	}
 }

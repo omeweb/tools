@@ -1,6 +1,6 @@
 package tools;
 
-import java.lang.reflect.Field;
+//import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -8,7 +8,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import sun.misc.Unsafe;
+//import sun.misc.Unsafe;
 import tools.Context;
 import tools.counter.AtomicKeyedCounter;
 import tools.counter.MultiKeyedCounter;
@@ -51,25 +51,25 @@ public class Global extends tools.InitializeOnce {
 		;
 	}
 
-	/**
-	 * 2014-12-13 by 六三，操作堆外内存（off-heap memory），详细说明：http://ifeve.com/sun-misc-unsafe/
-	 * 
-	 * @return
-	 */
-	public static Unsafe getUnsafe() {
-		Field f;
-		try {
-			f = Unsafe.class.getDeclaredField("theUnsafe");
-			f.setAccessible(true);
-			return (Unsafe) f.get(null);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		// 操作对外内存 http://robaustin.wikidot.com/how-to-write-to-direct-memory-locations-in-java
-
-		return null;
-	}
+	// /**
+	// * 2014-12-13 by 六三，操作堆外内存（off-heap memory），详细说明：http://ifeve.com/sun-misc-unsafe/
+	// *
+	// * @return
+	// */
+	// public static Unsafe getUnsafe() {
+	// Field f;
+	// try {
+	// f = Unsafe.class.getDeclaredField("theUnsafe");
+	// f.setAccessible(true);
+	// return (Unsafe) f.get(null);
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// }
+	//
+	// // 操作对外内存 http://robaustin.wikidot.com/how-to-write-to-direct-memory-locations-in-java
+	//
+	// return null;
+	// }
 
 	public static Map<String, Object> getSettings() {
 		if (settings == null)

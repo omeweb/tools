@@ -315,14 +315,15 @@ public class GeoIpService extends tools.InitializeOnce {
 		// return;
 
 		//
-		final String lang = "cn";
+		final String lang = "en";
 		final GeoIpService serv = new GeoIpService();
 		serv.setDataFolder("D:/Downloads/ip");
 		serv.init();
 		println(tools.Json.toString(serv.getIpInfo("122.226.247.178", lang)));
 		println(tools.Json.toString(serv.getIpInfo("101.66.178.157", lang)));
 		println(tools.Json.toString(serv.getIpInfo("221.175.224.245", lang)));
-		println(tools.Json.toString(serv.getIpInfo("1.0.130.193", "en")));
+		println(tools.Json.toString(serv.getIpInfo("1.0.130.193", lang)));
+		println(tools.Json.toString(serv.getIpInfo("1.100.130.193", lang)));
 
 		// 简单性能测试
 		int times = 100000;// 100000;

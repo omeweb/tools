@@ -9,8 +9,11 @@ import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import tools.StringUtil;
+
 public class HttpUtil {
 	public static final String DEFAULT_CHARSET = "utf-8";
+	public static final String EMPTY_KEY = "empty_key";
 
 	public static String decode(final String content, final String encoding) {
 		if (content == null) {
@@ -32,6 +35,39 @@ public class HttpUtil {
 		} catch (UnsupportedEncodingException e) {
 			throw new IllegalArgumentException(e);
 		}
+	}
+
+	/**
+	 * 2016-6-15 14:36:53 by liusan.dyf
+	 * 
+	 * @param url
+	 * @param params
+	 * @param charset
+	 * @return
+	 */
+	public static String generateUrl(String url, Map<String, String> params, String charset) {
+		// 处理url
+		if (null != params && params.size() > 0) {
+			if (charset == null)
+				charset = DEFAULT_CHARSET;
+
+			// 2012-03-06 bugfix 处理直接发送字符串的
+			if (params.containsKey(EMPTY_KEY)) {
+				String q = params.get(EMPTY_KEY);
+				params.remove(EMPTY_KEY);
+
+				params.putAll(StringUtil.parseQueryString(q, charset));
+			}
+			// 特殊字符编码
+			String encodedParams = toUrlEncodedString(params, charset);
+			if (-1 == url.indexOf("?")) {
+				url += "?" + encodedParams;
+			} else {
+				url += "&" + encodedParams;
+			}
+		}
+
+		return url;
 	}
 
 	public static String toUrlEncodedString(final Map<String, String> parameters, final String encoding) {

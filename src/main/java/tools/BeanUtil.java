@@ -23,12 +23,20 @@ public class BeanUtil {
 	public static void copy(Object srcObj, Object destObj) {
 		String key = getKey(srcObj.getClass(), destObj.getClass());
 		BeanCopier copier = null;
+		
 		if (!map.containsKey(key)) {
-			copier = BeanCopier.create(srcObj.getClass(), destObj.getClass(), false);
-			map.put(key, copier);
-		} else {
+			synchronized (map) {
+				if (!map.containsKey(key)) {
+					copier = BeanCopier.create(srcObj.getClass(), destObj.getClass(), false);
+					map.put(key, copier);
+				}
+			}
+		}
+
+		if (copier == null) {
 			copier = map.get(key);
 		}
+
 		copier.copy(srcObj, destObj, null);
 	}
 
@@ -44,7 +52,7 @@ public class BeanUtil {
 
 		BeanMap bm = BeanMap.create(destObj);
 		bm.putAll(m);
-		
+
 		// java.util.Set<String> keys = m.keySet();
 		// for (String item : keys) {
 		// bm.put(item, m.get(item));// 类型不匹配时会抛出 java.lang.ClassCastException:

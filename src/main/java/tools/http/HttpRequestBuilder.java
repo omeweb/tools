@@ -206,6 +206,15 @@ public class HttpRequestBuilder {
 		}
 	}
 
+	/**
+	 * 把参数附加到url里 2016-6-15 14:56:37 by liusan.dyf
+	 * 
+	 * @return
+	 */
+	public String url() {
+		return HttpUtil.generateUrl(url, data, this.httpRequest.getCharset());
+	}
+
 	public static HttpRequestBuilder create(String url) {
 		return new HttpRequestBuilder(url);
 	}
@@ -218,17 +227,19 @@ public class HttpRequestBuilder {
 		int i = 0;
 
 		// https测试
-		String str = HttpRequestBuilder.create("http://127.0.0.1/s.do").cookie("auth", "57526:六三:*:1451961451:a6951f62eaf7d4a34f2ed5c8a000792d").get().setContentCharset("utf-8").toString();
+		String str = HttpRequestBuilder
+				.create("http://www.drugoffice.gov.hk/eps/compendium.do?FunctionName=EPS&FunctionID=COMPENDIUM&action_type=LIST_PRODUCTS&startRange=AA&endRange=AZ")
+				.get().setContentCharset("utf-8").toString();
 		System.out.println(str);
 
 		if (i == 0)
 			return;
 
-		HttpResponse res = HttpRequestBuilder.create("http://www.baidu.com/s").proxy("localhost", 8888)
+		HttpResponse res = HttpRequestBuilder.create("http://www.baidu.com/s")// .proxy("localhost", 8888)
 				// .header("Content-Type", "application/json")
 				// .data("wd=淘宝")
 				.charset("gb2312").data("wd", "淘宝").post();
-				// res.setContentCharset("gb2312").saveAs(new File("d:/baidu.txt"));
+		res.setContentCharset("gb2312").saveAs(new java.io.File("d:/baidu.txt"));
 
 		// head测试 2012-07-02
 		res = HttpRequestBuilder.create("http://ww1.sinaimg.cn/bmiddle/6a14bb60jw1duje404yqaj.jpg").head();

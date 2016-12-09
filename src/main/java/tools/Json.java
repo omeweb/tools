@@ -44,12 +44,21 @@ public class Json {
 		// // 2012-12-13 by liusan.dyf
 		// objectMapper.configure(SerializationConfig.Feature.REQUIRE_SETTERS_FOR_GETTERS, true);
 
-		// // setDateFormat，免得默认把date对象序列化为timestamp
-		// objectMapper.setDateFormat(new
-		// SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+		// setDateFormat，免得默认把date对象序列化为timestamp
+		// objectMapper.setDateFormat(new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 
 		// SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		// df.setTimeZone(TimeZone.getTimeZone("GMT"));
+	}
+
+	/**
+	 * 2016-12-8 16:42:53 by liusan.dyf
+	 * 
+	 * @param v
+	 */
+	public static void setDateFormat(String v) {
+		if (!Validate.isNullOrEmpty(v))
+			objectMapper.setDateFormat(new java.text.SimpleDateFormat(v));
 	}
 
 	public static String toJson(Object value) {
@@ -91,6 +100,36 @@ public class Json {
 			return objectMapper.readValue(value, targetType);
 		} catch (Exception ex) {
 			System.out.println(value);// 2014-06-12 by liusan.dyf
+			ex.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * 2016-12-9 16:50:28 by liusan.dyf
+	 * 
+	 * <pre>
+	 * def mapper  = tools.Json.getObjectMapper();
+	
+	def map = [:]
+	map.a = "a"; //无关的属性也没有关系
+	map.key = 1;//"key";//类型会自动转换
+	
+	mapper.convertValue(map, com.underline.freeproj.domain.KeyValue.class);
+	 * </pre>
+	 * 
+	 * @param map
+	 * @param targetType
+	 * @return
+	 */
+	public static <T> T toObject(Map<String, Object> map, Class<T> targetType) {
+		if (map == null)
+			return null;
+
+		try {
+			return objectMapper.convertValue(map, targetType);
+		} catch (Exception ex) {
+			System.out.println(map);// 2014-06-12 by liusan.dyf
 			ex.printStackTrace();
 		}
 		return null;

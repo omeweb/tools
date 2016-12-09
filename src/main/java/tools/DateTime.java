@@ -17,6 +17,14 @@ public class DateTime {
 	private static Map<String, DateTimeFormatter> formatters = new java.util.concurrent.ConcurrentHashMap<String, DateTimeFormatter>();
 	private static final String DEFAULT_FORMATTER = "YYYY-MM-dd HH:mm:ss";
 
+	public static final int HOUR_MILLISECONDS = 1000 * 3600;// 毫秒 2016-7-28 15:23:41 by liusan.dyf
+	public static final int DAY_MILLISECONDS = HOUR_MILLISECONDS * 24;
+	public static final int WEEK_MILLISECONDS = DAY_MILLISECONDS * 7;
+
+	public static final int HOUR_SECONDS = 3600;// 秒 2016-7-28 15:23:41 by liusan.dyf
+	public static final int DAY_SECONDS = HOUR_SECONDS * 24;
+	public static final int WEEK_SECONDS = DAY_SECONDS * 7;
+
 	// ---------------2015-9-21 11:49:09 by liusan.dyf
 	private static volatile long currentTimeMillis = System.currentTimeMillis();// 当前时间
 
@@ -53,7 +61,7 @@ public class DateTime {
 	// ---------------end of currentTimeMillis
 
 	/**
-	 * 返回2个时间之差，单位为秒；如果入参不合法，返回-1。2014-05-12 by liusan.dyf
+	 * 返回2个时间之差，d2-d1，单位为秒；如果入参不合法，返回-1。2014-05-12 by liusan.dyf
 	 * 
 	 * @param d1
 	 * @param d2
@@ -67,7 +75,23 @@ public class DateTime {
 	}
 
 	/**
-	 * 2013-12-30 by liusan.dyf
+	 * 计算input和toCompare之间日期部分相差几天；如果是今天则返回0，前一天返回-1，后一天返回1 2016-12-5 20:48:35 by liusan.dyf
+	 * 
+	 * @param input
+	 * @param toCompare
+	 * @return
+	 */
+	public static int diffDays(Date input, Date toCompare) {
+		Date d1 = clearTime(input);
+		Date d2 = clearTime(toCompare);
+
+		return (int) ((d1.getTime() - d2.getTime()) / DAY_MILLISECONDS);
+
+		// 测试代码：System.out.println(diffDays(getDate(-1), getDate(0))); // -1
+	}
+
+	/**
+	 * 包括了时分秒部分 2013-12-30 by liusan.dyf
 	 * 
 	 * @param plusDays
 	 * @return
@@ -81,7 +105,7 @@ public class DateTime {
 	}
 
 	/**
-	 * 可以追加秒数 2014-05-06 by liusan.dyf
+	 * 追加秒数 2014-05-06 by liusan.dyf
 	 * 
 	 * @param seconds
 	 * @return
@@ -223,6 +247,9 @@ public class DateTime {
 	 * @return
 	 */
 	public static Date parse(Object value, String pattern) {
+		if (Validate.isNullOrEmpty(pattern))
+			pattern = DEFAULT_FORMATTER;
+
 		if (value == null || pattern == null || pattern.length() <= 0) {
 			return null;
 		}
@@ -266,6 +293,57 @@ public class DateTime {
 		return new org.joda.time.DateTime(d).withDayOfMonth(1).withTime(0, 0, 0, 0).toDate();
 	}
 
+	/**
+	 * 把秒位清零 2016-7-28 19:32:08 by liusan.dyf
+	 * 
+	 * @param d
+	 * @return
+	 */
+	public static Date clearSeconds(Date d) {
+		if (d == null)
+			d = new Date();
+
+		return new org.joda.time.DateTime(d).withSecondOfMinute(0).withMillisOfSecond(0).toDate();
+	}
+
+	public static Date clearSeconds(long ts) {
+		Date d = new Date(ts);
+		return clearSeconds(d);
+	}
+
+	public static Date clearTime(long ts) {
+		Date d = new Date(ts);
+		return clearTime(d);
+	}
+
+	public static Date clearTime(Date d) {
+		return new org.joda.time.DateTime(d).withTime(0, 0, 0, 0).toDate();
+	}
+
+	/**
+	 * 让d1的时间部分用d2的时间来代替 2016-7-29 10:51:51 by liusan.dyf
+	 * 
+	 * @param d1
+	 * @param d2
+	 * @return
+	 */
+	public static Date mixinTime(Date d1, Date d2) {
+		if (d1 == null)
+			return null;
+
+		if (d2 == null)
+			return d1;
+
+		org.joda.time.DateTime dt2 = new org.joda.time.DateTime(d2);
+
+		int h = dt2.getHourOfDay();
+		int m = dt2.getMinuteOfHour();
+		int s = dt2.getSecondOfMinute();
+		int ms = dt2.getMillisOfSecond();
+
+		return new org.joda.time.DateTime(d1).withTime(h, m, s, ms).toDate();
+	}
+
 	public static Date getFirstDayOfMonth(int year, int month) {
 		return new org.joda.time.DateTime(year, month, 1, 0, 0).toDate();
 	}
@@ -282,17 +360,22 @@ public class DateTime {
 	public static void main(String[] args) {
 		org.joda.time.DateTime time = new org.joda.time.DateTime();
 		System.out.println(time.getMillis());
-		System.out.println(time.getMonthOfYear());
-		System.out.println(time.getYear());
+		System.out.println(time.getMonthOfYear());// 7
+		System.out.println(time.getYear());// 2016
 
 		//
 		System.out.println(plusSeconds(300));
 
-		//
-		System.out.println(diff(new Date(), plusSeconds(200)));
+		String x = format(clearSeconds(null), "yyyy-MM-dd HH:mm:ss.SSS");
+		System.out.println("---------clearSeconds:" + x);
+
+		System.out.println("---------mixinTime:" + mixinTime(new Date(), plusSeconds(200)));
 
 		//
-		System.out.println(getFirstDayOfMonth(2014, 10));
+		System.out.println(diff(new Date(), plusSeconds(200)));// 200
+
+		//
+		System.out.println(getFirstDayOfMonth(2014, 10));// 10-1
 		System.out.println(getFirstDayOfMonth(null));
 		System.out.println(getLastDayOfMonth(null));
 
@@ -305,5 +388,9 @@ public class DateTime {
 		System.out.println(timestamp());
 
 		// Global.sleep(50000);
+		System.out.println(diffDays(getDate(-1), getDate(0))); // -1
+
+		long d = tools.DateTime.diff(parse("2016-12-9 11:10:09", null), plusDays(3));
+		System.out.println("_________" + d);
 	}
 }

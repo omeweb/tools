@@ -92,7 +92,7 @@ public class StringUtil {
 				'Ⅰ', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ', 'Ⅵ', 'Ⅶ', 'Ⅷ', 'Ⅸ', 'Ⅹ',
 
 				// 大小写的O
-				'O', 'o', 'L', 'l', 'Z', 'z', '丨', '|',
+				// 'O', 'o', 'L', 'l', 'Z', 'z', '丨', '|',
 
 				// 繁体 2014-11-27 by 六三
 				'貳', '叄', '陸', };
@@ -137,7 +137,7 @@ public class StringUtil {
 				"1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
 
 				// 大小写的O
-				"0", "0", "1", "1", "2", "2", "1", "1",
+				// "0", "0", "1", "1", "2", "2", "1", "1",
 
 				// 繁体 2014-11-27 by 六三
 				"2", "3", "6", };
@@ -206,12 +206,23 @@ public class StringUtil {
 	}
 
 	/**
-	 * 得到一段文本里的数字 2014-06-23 by liusan.dyf
+	 * 提取一段文本里的数字，非严格模式，即类似【壹】会被替换为【1】 2016-4-9 10:00:14 by liusan.dyf
 	 * 
 	 * @param v
 	 * @return
 	 */
 	public static String getNumbers(String v) {
+		return getNumbers(v, false);
+	}
+
+	/**
+	 * 得到一段文本里的数字 2014-06-23 by liusan.dyf
+	 * 
+	 * @param v
+	 * @param strict
+	 * @return
+	 */
+	public static String getNumbers(String v, boolean strict) {
 		if (v == null)
 			return null;
 
@@ -224,7 +235,7 @@ public class StringUtil {
 
 			if (ch >= 48 && ch <= 57) {
 				sb.append(ch);
-			} else if (specialNumberMap.containsKey(ch)) {
+			} else if (!strict && specialNumberMap.containsKey(ch)) {
 				sb.append(specialNumberMap.get(ch));// 2014-09-22，针对汉字里的特殊符号数字做替换
 			}
 		}
@@ -939,8 +950,11 @@ public class StringUtil {
 	 * @return
 	 */
 	public static String getFeature(String source, String prefix) {
-		if (isNullOrEmpty(source))
+		if (isNullOrEmpty(source) || isNullOrEmpty(prefix))
 			return EMPTY;
+
+		// 处理掉空格，空格是无意义的 2016-5-4 15:07:38 by liusan.dyf
+		source = replaceAll(source, " ", "");
 
 		int index = source.indexOf(prefix);
 		if (index == -1)
@@ -955,6 +969,7 @@ public class StringUtil {
 			ch = source.charAt(endIndex);
 
 			// 找到第一个非数字、字母、函数的字符为止 2016-1-7 11:03:19 by liusan.dyf
+			//
 			if (!Validate.isAsciiNumericChar(ch) && !Validate.isAsciiAlphaChar(ch)
 					&& !tools.Validate.isChineseChar(ch)) {
 				break;

@@ -29,8 +29,6 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import tools.StringUtil;
-
 /**
  * 目前暂时不支持直接post/put流到服务器 2012-02-03
  * 
@@ -147,7 +145,7 @@ public class HttpRequest {
 	/**
 	 * 2012-02-02，场合：构造post/put请求，直接把一串内容发送过去
 	 */
-	public static final String EMPTY_KEY = "empty_key";
+	public static final String EMPTY_KEY = HttpUtil.EMPTY_KEY;
 
 	/**
 	 * 是否启用multipart/form-data; boundary=...如果是get类的请求，则忽略该参数<br/>
@@ -279,24 +277,7 @@ public class HttpRequest {
 		// 处理URL，get类的请求，因为HttpURLConnection的创建需要url信息
 		if (isGet || isDelete || isHead) {
 			multipartFormData = false;// 修正useMultipart
-
-			// 处理url
-			if (null != params && params.size() > 0) {
-				// 2012-03-06 bugfix 处理直接发送字符串的
-				if (params.containsKey(EMPTY_KEY)) {
-					String q = params.get(EMPTY_KEY);
-					params.remove(EMPTY_KEY);
-
-					params.putAll(StringUtil.parseQueryString(q, HttpUtil.DEFAULT_CHARSET));
-				}
-				// 特殊字符编码
-				String encodedParams = HttpUtil.toUrlEncodedString(params, getCharset());
-				if (-1 == url.indexOf("?")) {
-					url += "?" + encodedParams;
-				} else {
-					url += "&" + encodedParams;
-				}
-			}
+			url = HttpUtil.generateUrl(url, params, getCharset()); // 2016-6-15 14:35:12 by liusan.dyf
 		}
 
 		// 创建连接
