@@ -122,6 +122,20 @@ public class DateTime {
 		return new org.joda.time.DateTime().plusHours(v).toDate();
 	}
 
+	// ------------------------2016-12-10 15:55:51 by liusan.dyf
+
+	public static Date plusSeconds(Date base, int seconds) {
+		return new org.joda.time.DateTime(base).plusSeconds(seconds).toDate();
+	}
+
+	public static Date plusMinutes(Date base, int v) {
+		return new org.joda.time.DateTime(base).plusMinutes(v).toDate();
+	}
+
+	public static Date plusHours(Date base, int v) {
+		return new org.joda.time.DateTime(base).plusHours(v).toDate();
+	}
+
 	/**
 	 * 得到给定日期的周一 2014-01-13 by liusan.dyf
 	 * 
@@ -390,7 +404,7 @@ public class DateTime {
 		// Global.sleep(50000);
 		System.out.println(diffDays(getDate(-1), getDate(0))); // -1
 
-		long d = tools.DateTime.diff(parse("2016-12-9 11:10:09", null), plusDays(3));
+		long d = tools.DateTime.diff(parse("2016-12-10 19:03:46", null), plusDays(3));
 		System.out.println("_________" + d);
 	}
 }
