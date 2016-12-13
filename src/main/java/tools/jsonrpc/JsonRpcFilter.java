@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
  * @version 1.0
  * @since 2013-12-17
  */
+@Deprecated
 public class JsonRpcFilter implements Filter {
 
 	@Override
@@ -81,8 +82,8 @@ public class JsonRpcFilter implements Filter {
 	}
 
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-		ServletException {
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+		throws IOException, ServletException {
 		// jsoncallback 2013-11-01 by liusan.dyf
 		String jsoncallback = request.getParameter("jsoncallback");
 

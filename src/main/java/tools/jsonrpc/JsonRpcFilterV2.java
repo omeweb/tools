@@ -62,6 +62,9 @@ public class JsonRpcFilterV2 implements Filter {
 			if (objKey.startsWith(spring)) {
 				// spring.100的形式 2012-04-11 by liusan.dyf
 				String keyX = objKey.substring(spring.length());
+				
+				if ("global".equals(keyX))// 2016-12-13 10:11:16 by liusan.dyf
+					return new tools.Global();
 
 				// 直接调用spring容器里某对象的方法 2012-08-13
 				return SpringContext.getBean(keyX);
