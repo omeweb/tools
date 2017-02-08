@@ -21,8 +21,8 @@ public class Validate {
 
 	private final static Pattern DIGIT_PATTERN = Pattern.compile("\\d{1,}", 0);
 
-	private final static Pattern EMAIL_PATTERN = Pattern
-			.compile("^[a-z0-9]([a-z0-9]*[-_.]?[a-z0-9]+)*@([a-z0-9]*[-_]?[a-z0-9]+)+[\\.][a-z]{2,3}([\\.][a-z]{2,3})?$");
+	private final static Pattern EMAIL_PATTERN = Pattern.compile(
+			"^[a-z0-9]([a-z0-9]*[-_.]?[a-z0-9]+)*@([a-z0-9]*[-_]?[a-z0-9]+)+[\\.][a-z]{2,3}([\\.][a-z]{2,3})?$");
 
 	private final static Pattern ASCII_ALPHA_NUMBER_PATTERN = Pattern.compile("^[A-Za-z0-9]+$");
 
@@ -30,8 +30,8 @@ public class Validate {
 
 	// private final static Pattern TIME_PATTERN = Pattern
 	// .compile("^((([0-1]?[0-9])|(2[0-3])):([0-5]?[0-9])(:[0-5]?[0-9])?)$");
-	private final static Pattern IP_PATTERN = Pattern
-			.compile("^(([1-9]|([1-9]\\d)|(1\\d\\d)|(2([0-4]\\d|5[0-5])))\\.)(([1-9]|([1-9]\\d)|(1\\d\\d)|(2([0-4]\\d|5[0-5])))\\.){2}([1-9]|([1-9]\\d)|(1\\d\\d)|(2([0-4]\\d|5[0-5])))$");
+	private final static Pattern IP_PATTERN = Pattern.compile(
+			"^(([1-9]|([1-9]\\d)|(1\\d\\d)|(2([0-4]\\d|5[0-5])))\\.)(([1-9]|([1-9]\\d)|(1\\d\\d)|(2([0-4]\\d|5[0-5])))\\.){2}([1-9]|([1-9]\\d)|(1\\d\\d)|(2([0-4]\\d|5[0-5])))$");
 
 	// \d => \\d，\. => \\.
 
@@ -40,7 +40,7 @@ public class Validate {
 	 */
 	private static final String[] PRIMITIVE_TYPES = { "java.lang.Character", "java.lang.Byte", "java.lang.Short",
 			"java.lang.Integer", "java.lang.Long", "java.lang.Float", "java.lang.Double", "java.lang.Boolean",
-			"java.lang.Void", "java.lang.String",// 2012-10-11
+			"java.lang.Void", "java.lang.String", // 2012-10-11
 			"java.lang.Number"// 2012-10-11
 	};
 
@@ -272,6 +272,30 @@ public class Validate {
 		for (int i = 0; i < len; i++) {
 			ch = v.charAt(i);
 			if (isAsciiAlphaChar(ch) || isAsciiNumericChar(ch))// 字母或者是数字
+				continue;
+			else
+				return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * 是否是合法的变量名：2016-12-16 20:27:48 by liusan.dyf 第一个字符必须是一个 ASCII 字母（大小写均可），或一个下划线(_)。注意第一个字符不能是数字。 后续的字符必须是字母、数字或下划线。
+	 * 变量名称一定不能是保留字。
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public static boolean isValidVariableName(String v) {
+		if (v == null || isEmpty(v))
+			return false;
+
+		int len = v.length();
+		char ch;
+		for (int i = 0; i < len; i++) {
+			ch = v.charAt(i);
+			if (isAsciiAlphaChar(ch) || ch == '_' || isAsciiNumericChar(ch))// 字母或者是数字
 				continue;
 			else
 				return false;
