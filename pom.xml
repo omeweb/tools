@@ -115,7 +115,7 @@
 			<version>2.5</version>
 		</dependency>
 		
-		<!--spring bean 随便哪个版本-->
+		<!-- spring bean 随便哪个版本 -->
 		<dependency>
 		  <groupId>org.springframework</groupId>
 		  <artifactId>spring-beans</artifactId>
